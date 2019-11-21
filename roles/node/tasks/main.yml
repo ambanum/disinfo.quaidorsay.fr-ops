@@ -1,0 +1,21 @@
+---
+- name: Install required packages
+  apt:
+    pkg: ['curl']
+    update_cache: yes
+    state: latest
+
+- name: Add the NodeSource repository to the system
+  shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo bash -
+
+- name: Install NodeJS and Npm
+  apt:
+    pkg: ['nodejs']
+    update_cache: yes
+    state: latest
+
+- name: Install forever
+  npm:
+    name: forever
+    global: yes
+    production: yes
