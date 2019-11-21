@@ -1,0 +1,31 @@
+---
+- name: Install package
+  apt:
+    pkg: ['nginx']
+    update_cache: yes
+    state: latest
+
+- name: Setup nginx conf
+  template:
+    src: nginx.conf.tpl
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Clean default conf from site-enabled
+  file:
+    state: absent
+    path: /etc/nginx/sites-enabled/default
+  notify: restart nginx
+
+- name: Add disinfo conf in site-available
+  template:
+    src: disinfo.tpl
+    dest: /etc/nginx/sites-available/disinfo
+  notify: restart nginx
+
+- name: Link disinfo conf from site-available to site-enabled
+  file:
+    src: /etc/nginx/sites-available/disinfo
+    dest: /etc/nginx/sites-enabled/disinfo
+    state: link
+  notify: restart nginx
