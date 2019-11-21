@@ -1,2 +1,3 @@
 .vagrant
 vault.key
+roles/mattermost/files

@@ -1,0 +1,75 @@
+---
+- name: Download Mattermost Server
+  get_url:
+    url: https://releases.mattermost.com/5.17.0/mattermost-5.17.0-linux-amd64.tar.gz
+    dest: /tmp/mattermost-5.17.0-linux-amd64.tar.gz
+
+- name: Extract the Mattermost Server files
+  unarchive:
+    src: /tmp/mattermost-5.17.0-linux-amd64.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Create the storage directory for files
+  file:
+    path: /opt/mattermost/data
+    state: directory
+
+- name: Copy data directory
+  copy:
+    src: data
+    dest: /opt/mattermost
+
+- name: Copy database dump file
+  copy:
+    src: dump.sql
+    dest: /tmp
+
+- name: Restore database
+  mysql_db:
+    name: mattermost
+    state: import
+    target: /tmp/dump.sql
+
+- name: Ensure group "mattermost" exists
+  group:
+    name: mattermost
+    state: present
+
+- name: Add the user 'mattermost' and a primary group of 'mattermost'
+  user:
+    name: mattermost
+    group: mattermost
+
+- name: Recursively change ownership of /opt/mattermost
+  file:
+    path: /opt/mattermost
+    state: directory
+    recurse: yes
+    owner: mattermost
+    group: mattermost
+
+- name: Setup conf
+  template:
+    src: config.json.tpl
+    dest: /opt/mattermost/config/config.json
+
+- name: Create service
+  template:
+    src: mattermost.service.tpl
+    dest: /lib/systemd/system/mattermost.service
+
+- name: Reload available services on system to add mattermost service
+  systemd:
+    daemon_reload: yes
+
+- name: Make sure the service is running and start on boot
+  systemd:
+    name: mattermost
+    state: started
+    enabled: yes
+
+- name: Restart service
+  service:
+    name: mattermost
+    state: restarted
