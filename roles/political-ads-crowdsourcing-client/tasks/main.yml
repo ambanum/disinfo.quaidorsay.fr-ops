@@ -1,0 +1,15 @@
+- name: Git Clone Repo
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ home_directory }}/{{ app }}"
+    force: yes
+
+- name: Install NPM packages
+  npm:
+    path: "{{ home_directory }}/{{ app }}"
+    unsafe_perm: yes
+
+- name: Build app
+  command:
+    cmd: npm run build
+    chdir: "{{ home_directory }}/{{ app }}"
