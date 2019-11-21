@@ -2,3 +2,6 @@
 - name: Setup system and disinfo.quaidorsay.fr app
   hosts: dev
   become: yes
+
+  roles:
+    - common
