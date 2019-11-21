@@ -1,0 +1,34 @@
+- name: Git Clone Repo
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ home_directory }}/{{ app }}"
+    force: yes
+  register: git_clone_app_finished
+
+- name: Install NPM packages
+  npm:
+    path: "{{ home_directory }}/{{ app }}"
+    unsafe_perm: yes
+    production: yes
+  register: npm_finished
+  when: git_clone_app_finished.changed
+
+- name: Add .env file
+  copy:
+    src: .env
+    dest: "{{ home_directory }}/{{ app }}/.env"
+
+- name: Stop APP
+  command: forever stop "{{ app }}"
+  ignore_errors: yes
+  when: npm_finished.changed
+  register: stop_app_finished
+
+- name: Start APP
+  command:
+    cmd: forever start -a --uid "{{ app }}" app/server.js
+    chdir: "{{ home_directory }}/{{ app }}"
+  environment:
+    NODE_ENV: production
+    PORT: "{{ app_port }}"
+  when: stop_app_finished.changed
