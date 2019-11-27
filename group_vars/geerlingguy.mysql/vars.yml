@@ -1,9 +1,0 @@
-# MySQL role variables
-mysql_root_password: "{{ vault_mysql_root_password }}"
-mysql_databases:
-  - name: mattermost
-mysql_users:
-  - name: mmuser
-    host: "%"
-    password: "{{ mysql_user_mmuser_password }}"
-    priv: "mattermost.*:ALL"
