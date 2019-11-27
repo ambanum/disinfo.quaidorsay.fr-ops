@@ -1,0 +1,148 @@
+---
+- name: Install required packages
+  apt:
+    pkg: ['python3-pip', 'python-setuptools', 'msmtp', 'moreutils']
+    update_cache: yes
+    state: latest
+
+- name: Install pew
+  pip:
+    name: ['pew', 'pexpect']
+    executable: pip3
+
+- name: "Create {{ pew_environment_name }} pew environment"
+  expect:
+    command: pew new -d "{{ pew_environment_name }}"
+    responses:
+      source completions and update your prompt: N
+      Will now continue with the command: ''
+  become: yes
+  become_user: vagrant
+
+- name: Git Clone Repo
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ home_directory }}/{{ app }}"
+    force: yes
+  register: git_clone_app_finished
+  become: yes
+  become_user: vagrant
+
+- name: Install python dependencies in "{{ pew_environment_name }}" pew env
+  command:
+    cmd: pew in "{{ pew_environment_name }}" pip install -e .
+    chdir: "{{ home_directory }}/{{ app }}"
+  become: yes
+  become_user: vagrant
+
+- name: Add /etc/msmtprc config
+  template:
+    src: etc/msmtprc
+    dest: "/etc/msmtprc"
+
+- name: Add /etc/msmtprc.password file
+  template:
+    src: etc/msmtprc.password
+    dest: "/etc/msmtprc.password"
+
+- name: Add /etc/aliases file
+  template:
+    src: etc/aliases
+    dest: "/etc/aliases"
+
+- name: Add facebook config
+  template:
+    src: facebook_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/facebook_fetch/config.py"
+  become: yes
+  become_user: vagrant
+
+- name: Creates data directory for facebook
+  file:
+    path: "/data/political-ads-scraper/facebook"
+    state: directory
+
+- name: Add google config
+  template:
+    src: google_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/google_fetch/config.py"
+  become: yes
+  become_user: vagrant
+
+- name: Creates data directory for google
+  file:
+    path: "/data/political-ads-scraper/google"
+    state: directory
+
+- name: Add twitter config
+  template:
+    src: twitter_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/twitter_fetch/config.py"
+  become: yes
+  become_user: vagrant
+
+- name: Creates data directory for twitter
+  file:
+    path: "/data/political-ads-scraper/twitter"
+    state: directory
+
+- name: Add Snapchat config
+  template:
+    src: snapchat_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/snapchat_fetch/config.py"
+  become: yes
+  become_user: vagrant
+
+- name: Creates data directory for Snapchat
+  file:
+    path: "/data/political-ads-scraper/snapchat"
+    state: directory
+
+- name: "Add a Facebook reports cron job"
+  cron:
+    name: "Generate Facebook reports"
+    minute: "22"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/reports.py 2>&1 | /usr/bin/ifne msmtp root"
+
+- name: "Add a Facebook fetch cron job"
+  cron:
+    name: "Fetch Facebook political ads"
+    minute: "22"
+    hour: "17"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+
+- name: "Add a Facebook graph cron job"
+  cron:
+    name: "Generate Facebook graph"
+    minute: "22"
+    hour: "16"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+
+- name: "Add a Twitter fetch cron job"
+  cron:
+    name: "Fetch Twitter political ads"
+    minute: "30"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/fetch.py >> /var/log/twitter_fetch/`date \"+\\%Y-\\%m-\\%d-\\%H-\\%M-\\%S\"`.log 2>&1"
+
+- name: "Add a Twitter graph cron job"
+  cron:
+    name: "Generate Twitter graph"
+    minute: "38"
+    hour: "21"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+
+- name: "Add a Google fetch cron job"
+  cron:
+    name: "Fetch Google political ads"
+    minute: "18"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/google_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+
+- name: "Add a Snapchat fetch cron job"
+  cron:
+    name: "Fetch Snapchat political ads"
+    minute: "45"
+    hour: "13"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/snapchat_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
