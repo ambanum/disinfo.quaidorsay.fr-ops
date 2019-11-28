@@ -4,9 +4,24 @@
   become: yes
 
   roles:
-    - {role: common, tags: 'common' }
-    - {role: geerlingguy.mysql, tags: 'mysql' }
-    - {role: nginx, tags: 'nginx' }
-    - {role: mattermost, tags: 'mattermost' }
-    - {role: node, tags: 'node' }
-    - {role: mongodb, tags: 'mongodb' }
+    - role: common
+      tags: common
+
+    - role: geerlingguy.certbot
+      tags: certbot
+      when: inventory_hostname != '127.0.0.1'
+
+    - role: geerlingguy.mysql
+      tags: mysql
+
+    - role: nginx
+      tags: nginx
+
+    - role: mattermost
+      tags: mattermost
+
+    - role: node
+      tags: node
+
+    - role: mongodb
+      tags: mongodb
