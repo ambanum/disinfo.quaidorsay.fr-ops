@@ -1,0 +1,7 @@
+---
+- name: political-ads-scraper app
+  hosts: all
+  become: yes
+
+  roles:
+    - political-ads-scraper
