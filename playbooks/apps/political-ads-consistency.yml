@@ -1,0 +1,7 @@
+---
+- name: Political-ads-consistency app
+  hosts: all
+  become: yes
+
+  roles:
+    - political-ads-consistency

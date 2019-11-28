@@ -1,0 +1,6 @@
+---
+- name: Setup disinfo.quaidorsay.fr infra and apps
+  hosts: all
+
+- import_playbook: infra.yml
+- import_playbook: apps.yml

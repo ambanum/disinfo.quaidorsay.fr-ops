@@ -1,0 +1,12 @@
+---
+- name: Setup disinfo.quaidorsay.fr apps
+  hosts: all
+  become: yes
+
+- import_playbook: apps/media-scale.yml
+- import_playbook: apps/panoptes.yml
+- import_playbook: apps/disinformation-chatbots.yml
+- import_playbook: apps/political-ads-consistency.yml
+- import_playbook: apps/political-ads-crowdsourcing-client.yml
+- import_playbook: apps/political-ads-crowdsourcing-server.yml
+- import_playbook: apps/political-ads-scraper.yml
