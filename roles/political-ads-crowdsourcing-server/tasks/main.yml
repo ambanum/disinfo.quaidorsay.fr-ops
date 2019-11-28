@@ -26,7 +26,7 @@
   tags:
     - setup
 
-- name: Stop APP
+- name: Stop app
   command: forever stop "{{ app }}"
   ignore_errors: yes
   tags:
@@ -34,12 +34,11 @@
     - stop
     - update
 
-- name: Start APP
+- name: Start app
   command:
     cmd: forever start -a --uid "{{ app }}" app/server.js
     chdir: "{{ home_directory }}/{{ app }}"
   environment:
-    NODE_ENV: production
     PORT: "{{ app_port }}"
   tags:
     - restart

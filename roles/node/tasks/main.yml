@@ -1,7 +1,7 @@
 ---
 - name: Install required packages
   apt:
-    pkg: ['curl']
+    name: curl
     update_cache: yes
     state: latest
 
@@ -10,7 +10,7 @@
 
 - name: Install NodeJS and Npm
   apt:
-    pkg: ['nodejs']
+    name: nodejs
     update_cache: yes
     state: latest
 
