@@ -138,4 +138,4 @@
   tags:
     - setup
 
-#- import_tasks: cron-jobs.yml
+- import_tasks: cron-jobs.yml
