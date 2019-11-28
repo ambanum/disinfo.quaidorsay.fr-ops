@@ -4,6 +4,9 @@
     dest: "{{ home_directory }}/{{ app }}"
     force: yes
   register: git_clone_app_finished
+  tags:
+    - setup
+    - update
 
 - name: Install NPM packages
   npm:
@@ -12,27 +15,40 @@
     production: yes
   register: npm_finished
   when: git_clone_app_finished.changed
+  tags:
+    - setup
+    - update
 
 - name: Creates config directory
   file:
     path: "{{ home_directory }}/{{ app }}/config"
     state: directory
+  tags:
+    - setup
 
 - name: Creates db directory
   file:
     path: "{{ home_directory }}/{{ app }}/app/rss/db"
     state: directory
+  tags:
+    - setup
 
 - name: Add default conf
   template:
     src: default.json.tpl
     dest: "{{ home_directory }}/{{ app }}/config/default.json"
+  tags:
+    - setup
 
 - name: Stop APP
   command: forever stop "{{ app }}"
   ignore_errors: yes
   when: npm_finished.changed
   register: stop_app_finished
+  tags:
+    - restart
+    - stop
+    - update
 
 - name: Start APP
   command:
@@ -42,3 +58,7 @@
     NODE_ENV: production
     PORT: "{{ app_port }}"
   when: stop_app_finished.changed
+  tags:
+    - restart
+    - start
+    - update

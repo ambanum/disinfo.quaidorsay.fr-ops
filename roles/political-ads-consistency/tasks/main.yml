@@ -3,13 +3,22 @@
     repo: "{{ repo }}"
     dest: "{{ home_directory }}/{{ app }}"
     force: yes
+  tags:
+    - setup
+    - update
 
 - name: Install NPM packages
   npm:
     path: "{{ home_directory }}/{{ app }}"
     unsafe_perm: yes
+  tags:
+    - setup
+    - update
 
 - name: Build app
   command:
     cmd: npm run build
     chdir: "{{ home_directory }}/{{ app }}"
+  tags:
+    - setup
+    - update

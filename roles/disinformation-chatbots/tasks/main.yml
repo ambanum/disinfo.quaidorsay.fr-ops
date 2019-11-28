@@ -3,6 +3,8 @@
     pkg: ['libcairo2-dev', 'libjpeg-dev', 'libgif-dev', 'redis']
     update_cache: yes
     state: latest
+  tags:
+    - setup
 
 - name: Git Clone Repo
   git:
@@ -10,6 +12,9 @@
     dest: "{{ home_directory }}/{{ app }}"
     force: yes
   register: git_clone_app_finished
+  tags:
+    - setup
+    - update
 
 - name: Install NPM packages
   npm:
@@ -18,16 +23,25 @@
     production: yes
   register: npm_finished
   when: git_clone_app_finished.changed
+  tags:
+    - setup
+    - update
 
 - name: Add production conf
   template:
     src: production.json.tpl
     dest: "{{ home_directory }}/{{ app }}/config/production.json"
+  tags:
+    - setup
 
 - name: Stop APP
   command: forever stop "{{ app }}"
   ignore_errors: yes
   register: stop_app_finished
+  tags:
+    - restart
+    - stop
+    - update
 
 - name: Start APP
   command:
@@ -37,3 +51,7 @@
     NODE_ENV: production
     PORT: "{{ app_port }}"
   when: stop_app_finished.changed
+  tags:
+    - restart
+    - start
+    - update
