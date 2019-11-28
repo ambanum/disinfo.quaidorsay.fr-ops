@@ -3,6 +3,7 @@
     repo: "{{ repo }}"
     dest: "{{ home_directory }}/{{ app }}"
     force: yes
+  register: git_clone_app_finished
   tags:
     - setup
     - update
@@ -11,6 +12,7 @@
   npm:
     path: "{{ home_directory }}/{{ app }}"
     unsafe_perm: yes
+  when: git_clone_app_finished.changed
   tags:
     - setup
     - update
