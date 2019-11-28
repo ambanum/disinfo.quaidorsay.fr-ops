@@ -24,12 +24,12 @@ server {
 #     ssl_session_cache shared:SSL:50m;
 
     location /political-ads-consistency {
-        alias /home/cloud/political-ads-consistency/build/;
+        alias /home/{{ ansible_user }}/political-ads-consistency/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
     location /political-ads {
-        alias /home/cloud/political-ads-crowdsourcing-client/build/;
+        alias /home/{{ ansible_user }}/political-ads-crowdsourcing-client/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
