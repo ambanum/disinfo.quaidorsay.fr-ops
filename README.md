@@ -56,23 +56,25 @@ To execute commands on the production server you should specify it by adding the
 
 - To setup a phoenix server:
 ```
-ansible-playbook site.yml
+ansible-playbook playbooks/site.yml
 ```
 
 - To setup infrastructure only:
 ```
-ansible-playbook infra.yml
+ansible-playbook playbooks/infra.yml
 ```
 
 - To setup apps only:
 ```
-ansible-playbook apps.yml
+ansible-playbook playbooks/apps.yml
 ```
 
 By adding the following options you can:
 - see what changed with `--diff`
 - simulate execution with `--check`
 - see what will be changed with `--check --diff`
+
+### Tags
 
 There are some availables tags to finetune what will happen:
  - `setup`: to only setup system dependencies required by the app(s) (cloning repo, installing app dependencies, all config files, and so on…)
@@ -83,12 +85,17 @@ There are some availables tags to finetune what will happen:
 
 For example you can update all apps by running:
 ```
-ansible-playbook apps.yml -t update
+ansible-playbook playbooks/apps.yml -t update
 ```
 
-There are also a tag available for each app to allow working only on one (or multiple but not all) app(s).
-
+There are also a tag available for each app to allow working only specified ones. \
 For example you can update only `media-scale` and `panoptes` apps by running:
 ```
-ansible-playbook apps.yml -t media-scale,panoptes,update
+ansible-playbook playbooks/apps.yml -t media-scale,panoptes,update
+```
+
+Finally, there are also tags available for each infra module (see `infra.yml` to see all tags) to allow setup only one module. \
+For example to setup only Mattermost on the new server you can run:
+```
+ansible-playbook playbooks/infra.yml -t mattermost
 ```
