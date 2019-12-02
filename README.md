@@ -11,7 +11,7 @@ Recipes to setup infrastructure and deploy disinfo.quaidorsay.fr website and API
 
 ### [For developement only] Additionals dependencies
 
-To test the changes without impacting the actual server, a Vagrantfile is provided to test the changes locally in a virtual machine. VirtualBox and Vagrant are therefore required.
+To test the changes without impacting the production server, a Vagrantfile is provided to test the changes locally in a virtual machine. VirtualBox and Vagrant are therefore required.
 
 - Install [VirtualBox](https://www.vagrantup.com/docs/installation/)
 - Install [Vagrant](https://www.vagrantup.com/docs/installation/)
@@ -20,7 +20,7 @@ To test the changes without impacting the actual server, a Vagrantfile is provid
 
 ### Allow decrypting all sensitive data.
 
-A password is needed to decrypt encrypted files with ansible-vault.
+A password is needed to decrypt encrypted files with [`ansible-vault`](https://docs.ansible.com/ansible/latest/user_guide/vault.html).
 Get the password from the administrator and copy it in a `vault.key` file at the root of this project, it will avoid entering it every time you run a command.
 
 ### [For developement only] Configure your host machine to access the VM.
@@ -30,9 +30,9 @@ Edit your hosts file `/etc/hosts`, add the following line so you can connect to 
 192.168.33.10    vagrant.local
 ```
 
-Now on your browser you can access the VM with http://vagrant.local
+Now on your browser you will be able to access deployed app on the VM with the URL `http://vagrant.local`
 
-The server name (`vagrant.local`) can be changed in the file `/inventories/dev.yml`:.
+The server name `vagrant.local` can be changed in the file `/inventories/dev.yml`:
 ```
 […]
     dev:
@@ -44,20 +44,21 @@ The server name (`vagrant.local`) can be changed in the file `/inventories/dev.y
 
 The guest VM's IP can be changed in the `VagrantFile`:
 ```
-# Create a private network, which allows host-only access to the machine
-# using a specific IP.
+[…]
 config.vm.network "private_network", ip: "192.168.33.10"
+[…]
 ```
 
 ## Usage
 
-To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM (The VM need to be started before with `vagrant up`).\
+To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM. Note that the VM need to be started before with `vagrant up`.\
 To execute commands on the production server you should specify it by adding the option `-i inventories/production.yml` to the following commands:
 
 - To setup a phoenix server:
 ```
 ansible-playbook playbooks/site.yml
 ```
+Before being able to setting up a fully fonctionnal phoenix server, you have to create a MySQL dump of the Mattermost database, and create a copy of the directory `/opt/mattermost/data`. Put the `dump.sql` and the `data` directory on the `/roles/mattermost/files` directory on your local machine.
 
 - To setup infrastructure only:
 ```
