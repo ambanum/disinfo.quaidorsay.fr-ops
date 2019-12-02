@@ -1,0 +1,9 @@
+all:
+  children:
+    production:
+      hosts:
+        disinfo.quaidorsay.fr:
+          ansible_user: cloud
+          ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o IdentitiesOnly=yes
+          base_url: https://disinfo.quaidorsay.fr
+          enable_https: true
