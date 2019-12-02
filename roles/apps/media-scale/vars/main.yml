@@ -1,0 +1,4 @@
+---
+repo: https://github.com/ambanum/media-scale.git
+app: media-scale
+app_port: 3030

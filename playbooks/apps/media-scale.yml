@@ -4,4 +4,4 @@
   become: yes
 
   roles:
-    - media-scale
+    - apps/media-scale

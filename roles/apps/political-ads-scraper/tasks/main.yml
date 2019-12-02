@@ -1,0 +1,141 @@
+---
+- name: Install required packages
+  apt:
+    pkg:
+    - python3-pip
+    - python-setuptools
+    - msmtp
+    - moreutils
+    update_cache: yes
+    state: latest
+  tags:
+    - setup
+
+- name: Install pew
+  pip:
+    name:
+      - pew
+      - pexpect
+    executable: pip3
+  tags:
+    - setup
+
+- name: "Create {{ pew_environment_name }} pew environment"
+  expect:
+    command: pew new -d "{{ pew_environment_name }}"
+    responses:
+      source completions and update your prompt: N
+      Will now continue with the command: ''
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+
+- name: Git Clone Repo
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ home_directory }}/{{ app }}"
+    force: yes
+  register: git_clone_app_finished
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+    - update
+
+- name: Install python dependencies in "{{ pew_environment_name }}" pew env
+  command:
+    cmd: pew in "{{ pew_environment_name }}" pip install -e .
+    chdir: "{{ home_directory }}/{{ app }}"
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+    - update
+
+- name: Add /etc/msmtprc config
+  template:
+    src: etc/msmtprc
+    dest: "/etc/msmtprc"
+  tags:
+    - setup
+
+- name: Add /etc/msmtprc.password file
+  template:
+    src: etc/msmtprc.password
+    dest: "/etc/msmtprc.password"
+  tags:
+    - setup
+
+- name: Add /etc/aliases file
+  template:
+    src: etc/aliases
+    dest: "/etc/aliases"
+  tags:
+    - setup
+
+- name: Add facebook config
+  template:
+    src: facebook_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/facebook_fetch/config.py"
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+
+- name: Creates data directory for facebook
+  file:
+    path: "/data/political-ads-scraper/facebook"
+    state: directory
+  tags:
+    - setup
+
+- name: Add google config
+  template:
+    src: google_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/google_fetch/config.py"
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+
+- name: Creates data directory for google
+  file:
+    path: "/data/political-ads-scraper/google"
+    state: directory
+  tags:
+    - setup
+
+- name: Add twitter config
+  template:
+    src: twitter_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/twitter_fetch/config.py"
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+
+- name: Creates data directory for twitter
+  file:
+    path: "/data/political-ads-scraper/twitter"
+    state: directory
+  tags:
+    - setup
+
+- name: Add Snapchat config
+  template:
+    src: snapchat_fetch/config.py
+    dest: "{{ home_directory }}/{{ app }}/snapchat_fetch/config.py"
+  become: yes
+  become_user: vagrant
+  tags:
+    - setup
+
+- name: Creates data directory for Snapchat
+  file:
+    path: "/data/political-ads-scraper/snapchat"
+    state: directory
+  tags:
+    - setup
+
+- import_tasks: cron-jobs.yml

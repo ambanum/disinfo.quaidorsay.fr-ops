@@ -1,5 +1,0 @@
----
-repo: https://github.com/ambanum/political-ads-scraper.git
-app: political-ads-scraper
-data_directory: "/data/{{ app }}"
-pew_environment_name: political-ads-scraper

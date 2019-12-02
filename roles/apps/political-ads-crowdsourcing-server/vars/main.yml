@@ -1,0 +1,4 @@
+---
+repo: https://github.com/ambanum/political-ads-crowdsourcing-server.git
+app: political-ads-crowdsourcing-server
+app_port: 3003

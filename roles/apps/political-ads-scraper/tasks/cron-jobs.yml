@@ -1,0 +1,62 @@
+- name: "Add a Facebook reports cron job"
+  cron:
+    name: "Generate Facebook reports"
+    minute: "22"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/reports.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup
+
+- name: "Add a Facebook fetch cron job"
+  cron:
+    name: "Fetch Facebook political ads"
+    minute: "22"
+    hour: "17"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup
+
+- name: "Add a Facebook graph cron job"
+  cron:
+    name: "Generate Facebook graph"
+    minute: "22"
+    hour: "16"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup
+
+- name: "Add a Twitter fetch cron job"
+  cron:
+    name: "Fetch Twitter political ads"
+    minute: "30"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/fetch.py >> /var/log/twitter_fetch/`date \"+\\%Y-\\%m-\\%d-\\%H-\\%M-\\%S\"`.log 2>&1"
+  tags:
+    - setup
+
+- name: "Add a Twitter graph cron job"
+  cron:
+    name: "Generate Twitter graph"
+    minute: "38"
+    hour: "21"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup
+
+- name: "Add a Google fetch cron job"
+  cron:
+    name: "Fetch Google political ads"
+    minute: "18"
+    hour: "14"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/google_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup
+
+- name: "Add a Snapchat fetch cron job"
+  cron:
+    name: "Fetch Snapchat political ads"
+    minute: "45"
+    hour: "13"
+    job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/snapchat_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  tags:
+    - setup

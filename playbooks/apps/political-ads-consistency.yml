@@ -4,4 +4,4 @@
   become: yes
 
   roles:
-    - political-ads-consistency
+    - apps/political-ads-consistency

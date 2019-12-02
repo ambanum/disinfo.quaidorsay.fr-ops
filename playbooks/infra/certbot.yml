@@ -1,0 +1,8 @@
+---
+- name: Certbot
+  hosts: all
+  become: yes
+
+  roles:
+    - role: geerlingguy.certbot
+      when: enable_https

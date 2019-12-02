@@ -1,0 +1,8 @@
+---
+- name: Install common required packages
+  apt:
+    pkg:
+    - build-essential
+    - git
+    update_cache: yes
+    state: latest

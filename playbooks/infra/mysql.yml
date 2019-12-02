@@ -1,0 +1,7 @@
+---
+- name: Mysql
+  hosts: all
+  become: yes
+
+  roles:
+    - role: geerlingguy.mysql

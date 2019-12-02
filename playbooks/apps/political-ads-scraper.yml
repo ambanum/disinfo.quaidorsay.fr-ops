@@ -4,4 +4,4 @@
   become: yes
 
   roles:
-    - political-ads-scraper
+    - apps/political-ads-scraper

@@ -69,6 +69,26 @@ ansible-playbook playbooks/infra.yml
 ansible-playbook playbooks/apps.yml
 ```
 
+- To setup one app only:
+```
+ansible-playbook playbooks/apps/<APP_NAME>.yml
+```
+_You can find all available apps in `playbooks/apps/` directory._
+For example to setup only `media-scale`app on the new server:
+```
+ansible-playbook playbooks/apps/media-scale.yml
+```
+
+- To setup one subpart of the infra:
+```
+ansible-playbook playbooks/infra/<MODULE>.yml
+```
+_You can find all available modules in `playbooks/infra/` directory._\
+For example to setup only MongoDB on the new server:
+```
+ansible-playbook playbooks/infra/mongodb.yml
+```
+
 By adding the following options you can:
 - see what changed with `--diff`
 - simulate execution with `--check`
@@ -88,14 +108,12 @@ For example you can update all apps by running:
 ansible-playbook playbooks/apps.yml -t update
 ```
 
-There are also a tag available for each app to allow working only specified ones. \
-For example you can update only `media-scale` and `panoptes` apps by running:
+Or update only `media-scale`:
 ```
-ansible-playbook playbooks/apps.yml -t media-scale,panoptes,update
+ansible-playbook playbooks/apps/media-scale.yml -t update
 ```
 
-Finally, there are also tags available for each infra module (see `infra.yml` to see all tags) to allow setup only one module. \
-For example to setup only Mattermost on the new server you can run:
+Or restart only `panoptes`:
 ```
-ansible-playbook playbooks/infra.yml -t mattermost
+ansible-playbook playbooks/apps/panoptes.yml -t restart
 ```

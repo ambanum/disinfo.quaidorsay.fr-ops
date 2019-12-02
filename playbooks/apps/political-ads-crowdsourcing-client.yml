@@ -4,4 +4,4 @@
   become: yes
 
   roles:
-    - political-ads-crowdsourcing-client
+    - apps/political-ads-crowdsourcing-client

@@ -1,0 +1,4 @@
+---
+repo: https://github.com/ambanum/disinformation-chatbots.git
+app: disinformation-chatbots
+app_port: 3000

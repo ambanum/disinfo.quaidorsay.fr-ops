@@ -1,0 +1,7 @@
+---
+- name: Mattermost
+  hosts: all
+  become: yes
+
+  roles:
+    - infra/mattermost
