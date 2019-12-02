@@ -9,7 +9,7 @@
 
     - role: geerlingguy.certbot
       tags: certbot
-      when: inventory_hostname != '127.0.0.1'
+      when: enable_https
 
     - role: geerlingguy.mysql
       tags: mysql
