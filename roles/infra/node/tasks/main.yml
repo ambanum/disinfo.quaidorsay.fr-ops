@@ -5,8 +5,8 @@
     update_cache: yes
     state: latest
 
-# - name: Add the NodeSource repository to the system
-#   shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo bash -
+- name: Add the NodeSource repository to the system
+  shell: curl -sL https://deb.nodesource.com/setup_11.x | sudo bash -
 
 - name: Install NodeJS and Npm
   apt:
