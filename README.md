@@ -16,15 +16,14 @@ To test the changes without impacting the actual server, a Vagrantfile is provid
 - Install [VirtualBox](https://www.vagrantup.com/docs/installation/)
 - Install [Vagrant](https://www.vagrantup.com/docs/installation/)
 
-### Configuration
+## Configuration
 
-#### Allow decrypting all sensitive data.
+### Allow decrypting all sensitive data.
 
 A password is needed to decrypt encrypted files with ansible-vault.
-Get the password from the administrator and copy it in a `vault.key` file at the root of this project, it will allows to avoid entering it each time you run the command.
+Get the password from the administrator and copy it in a `vault.key` file at the root of this project, it will avoid entering it every time you run a command.
 
-
-#### [For developement only] Configure your host machine to access the VM.
+### [For developement only] Configure your host machine to access the VM.
 
 Edit your hosts file `/etc/hosts`, add the following line so you can connect to the VM to test deployed apps from your host machine's browser:
 ```
