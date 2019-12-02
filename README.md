@@ -58,7 +58,7 @@ To execute commands on the production server you should specify it by adding the
 ```
 ansible-playbook playbooks/site.yml
 ```
-Before being able to setting up a fully fonctionnal phoenix server, you have to create a MySQL dump of the Mattermost database, and create a copy of the directory `/opt/mattermost/data`. Put the `dump.sql` and the `data` directory on the `/roles/mattermost/files` directory on your local machine.
+Before being able to setting up a fully fonctionnal phoenix server, you have to create a MySQL dump of the Mattermost database, and create a copy of the directory `/opt/mattermost/data`. Put the `dump.sql` and the `data` directory on the `/roles/infra/mattermost/files` directory on your local machine.
 
 - To setup infrastructure only:
 ```
