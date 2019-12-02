@@ -51,7 +51,8 @@ config.vm.network "private_network", ip: "192.168.33.10"
 
 ## Usage
 
-_Note: To avoid making changes on the production server by mistake, all commands will be run on the vagrant dev VM, which need to be started before with `vagrant up`. To execute command on the production server you should specify it by adding the option `-i inventories/production.yml`_
+To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM (The VM need to be started before with `vagrant up`).\
+To execute commands on the production server you should specify it by adding the option `-i inventories/production.yml` to the following commands:
 
 - To setup a phoenix server:
 ```
@@ -91,4 +92,3 @@ For example you can update only `media-scale` and `panoptes` apps by running:
 ```
 ansible-playbook apps.yml -t media-scale,panoptes,update
 ```
-- - -
