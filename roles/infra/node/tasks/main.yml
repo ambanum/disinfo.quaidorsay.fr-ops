@@ -14,7 +14,7 @@
     update_cache: yes
     state: latest
 
-- name: Npm install latest version
+- name: Update Npm to latest version
   command: npm install -g npm
 
 - name: Install forever
