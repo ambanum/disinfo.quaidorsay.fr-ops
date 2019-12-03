@@ -11,18 +11,18 @@ server {
     listen 80 default_server;
     server_name {{ base_url }};
 {% if enable_https %}
-    #     return 301 https://$server_name$request_uri;
-    # }
-    # server {
-    #     listen 443 ssl http2;
-    #     server_name {{ base_url }};
-    #     ssl_certificate /etc/letsencrypt/live/desinfo.quaidorsay.fr/fullchain.pem;
-    #     ssl_certificate_key /etc/letsencrypt/live/desinfo.quaidorsay.fr/privkey.pem;
-    #     ssl_session_timeout 1d;
-    #     ssl_protocols TLSv1.2;
-    #     ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
-    #     ssl_prefer_server_ciphers on;
-    #     ssl_session_cache shared:SSL:50m;
+    return 301 https://$server_name$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    server_name {{ base_url }};
+    ssl_certificate /etc/letsencrypt/live/disinfo.quaidorsay.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/disinfo.quaidorsay.fr/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_protocols TLSv1.2;
+    ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:50m;
 {% endif %}
 
     location /political-ads-consistency {
