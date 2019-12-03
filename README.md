@@ -52,25 +52,30 @@ config.vm.network "private_network", ip: "192.168.33.10"
 ## Usage
 
 To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM. Note that the VM need to be started before with `vagrant up`.\
-To execute commands on the production server you should specify it by adding the option `-i inventories/production.yml` to the following commands:
+To execute commands on the production server you should specify it by adding the option `-i inventories/production.yml` to the following commands.
 
-- To setup a phoenix server:
+- **Setup a phoenix server:**
+
+  Before all, following backup steps are required:
+  - Create a dump of the Mattermost MySQL database with `mysqldump -u root mattermost -p -r /tmp/dump.sql`.
+  - Copy the resulting dump to the Mattermost role's `files` directory of this project on your local machine with: `scp -r -p cloud@disinfo.quaidorsay.fr:/tmp/dump.sql ./roles/infra/mattermost/files`.
+  - Copy all scrapped political ads data to the new server directly (there is more than 500Go). Connect to `disinfo.quaidorsay.fr` server and run: `rsync -azP /mnt/data/political-ads-scraper/ cloud@sismo.quaidorsay.fr:/mnt/data/political-ads-scraper`.
+
 ```
 ansible-playbook playbooks/site.yml
 ```
-Before being able to setting up a fully fonctionnal phoenix server, you have to create a MySQL dump of the Mattermost database, and create a copy of the directory `/opt/mattermost/data`. Put the `dump.sql` and the `data` directory on the `/roles/infra/mattermost/files` directory on your local machine.
 
-- To setup infrastructure only:
+- **Setup infrastructure only:**
 ```
 ansible-playbook playbooks/infra.yml
 ```
 
-- To setup apps only:
+- **Setup apps only:**
 ```
 ansible-playbook playbooks/apps.yml
 ```
 
-- To setup one app only:
+- **Setup one app only:**
 ```
 ansible-playbook playbooks/apps/<APP_NAME>.yml
 ```
@@ -81,7 +86,7 @@ For example, to setup only `media-scale`app on the new server:
 ansible-playbook playbooks/apps/media-scale.yml
 ```
 
-- To setup one subpart of the infra:
+- **Setup one sub part of the infra:**
 ```
 ansible-playbook playbooks/infra/<MODULE>.yml
 ```
@@ -92,12 +97,21 @@ For example, to setup only MongoDB on the new server:
 ansible-playbook playbooks/infra/mongodb.yml
 ```
 
-Some useful options can be used to:
-- see what changed with `--diff`
-- simulate execution with `--check`
-- see what will be changed with `--check --diff`
+### Options and tags
 
-### Tags
+#### Options
+
+Ansible provide among many others the following useful options:
+- `--diff`: to see what changed.
+- `--check`: to simulate execution.
+- `--check --diff`: to see what will be changed.
+
+For example, if you modify the nginx config and you want to see what will be changed you can run:
+```
+ansible-playbook playbooks/infra/nginx.yml --check --diff
+```
+
+#### Tags
 
 Some tags are available to refine what will happen, use them with `-t`:
  - `setup`: to only setup system dependencies required by the app(s) (cloning repo, installing app dependencies, all config files, and so on…)
@@ -119,4 +133,25 @@ ansible-playbook playbooks/apps/media-scale.yml -t update
 …or restart only `panoptes`:
 ```
 ansible-playbook playbooks/apps/panoptes.yml -t restart
+```
+
+### Troubleshooting
+
+If you have the following error:
+
+```
+Failed to connect to the host via ssh: Received disconnect from 127.0.0.1 port 2222:2: Too many authentication failures
+```
+
+Modify ansible ssh options to the `inventories/dev.yml` file like this:
+```
+all:
+  children:
+    dev:
+      hosts:
+        '127.0.0.1':
+          […]
+          ansible_ssh_private_key_file: .vagrant/machines/default/virtualbox/private_key
+          ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o IdentitiesOnly=yes
+          […]
 ```
