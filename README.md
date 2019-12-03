@@ -74,8 +74,9 @@ ansible-playbook playbooks/apps.yml
 ```
 ansible-playbook playbooks/apps/<APP_NAME>.yml
 ```
-_You can find all available apps in `playbooks/apps/` directory._
-For example to setup only `media-scale`app on the new server:
+_You can find all available apps in `playbooks/apps` directory._
+
+For example, to setup only `media-scale`app on the new server:
 ```
 ansible-playbook playbooks/apps/media-scale.yml
 ```
@@ -84,37 +85,38 @@ ansible-playbook playbooks/apps/media-scale.yml
 ```
 ansible-playbook playbooks/infra/<MODULE>.yml
 ```
-_You can find all available modules in `playbooks/infra/` directory._\
-For example to setup only MongoDB on the new server:
+_You can find all available modules in `playbooks/infra` directory._
+
+For example, to setup only MongoDB on the new server:
 ```
 ansible-playbook playbooks/infra/mongodb.yml
 ```
 
-By adding the following options you can:
+Some useful options can be used to:
 - see what changed with `--diff`
 - simulate execution with `--check`
 - see what will be changed with `--check --diff`
 
 ### Tags
 
-There are some availables tags to finetune what will happen:
+Some tags are available to refine what will happen, use them with `-t`:
  - `setup`: to only setup system dependencies required by the app(s) (cloning repo, installing app dependencies, all config files, and so on…)
  - `start`: to start the app(s)
  - `stop`: to stop the app(s)
  - `restart`: to restart the app(s)
  - `update`: to update the app(s) (pull code, install dependencies and restart app)
 
-For example you can update all apps by running:
+For example, you can update all apps by running:
 ```
 ansible-playbook playbooks/apps.yml -t update
 ```
 
-Or update only `media-scale`:
+…or update only `media-scale`:
 ```
 ansible-playbook playbooks/apps/media-scale.yml -t update
 ```
 
-Or restart only `panoptes`:
+…or restart only `panoptes`:
 ```
 ansible-playbook playbooks/apps/panoptes.yml -t restart
 ```
