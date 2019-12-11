@@ -38,6 +38,9 @@
   tags:
     - setup
 
+# Install and run MRISA server for reverse image search
+- import_tasks: mrisa.yml
+
 - name: Stop app
   command: forever stop "{{ app }}"
   ignore_errors: yes
