@@ -27,7 +27,7 @@
       source completions and update your prompt: N
       Will now continue with the command: ''
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
 
@@ -38,7 +38,7 @@
     force: yes
   register: git_clone_app_finished
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
     - update
@@ -48,7 +48,7 @@
     cmd: pew in "{{ pew_environment_name }}" pip install -e .
     chdir: "{{ home_directory }}/{{ app }}"
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
     - update
@@ -79,7 +79,7 @@
     src: facebook_fetch/config.py
     dest: "{{ home_directory }}/{{ app }}/facebook_fetch/config.py"
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
 
@@ -95,7 +95,7 @@
     src: google_fetch/config.py
     dest: "{{ home_directory }}/{{ app }}/google_fetch/config.py"
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
 
@@ -111,7 +111,7 @@
     src: twitter_fetch/config.py
     dest: "{{ home_directory }}/{{ app }}/twitter_fetch/config.py"
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
 
@@ -127,7 +127,7 @@
     src: snapchat_fetch/config.py
     dest: "{{ home_directory }}/{{ app }}/snapchat_fetch/config.py"
   become: yes
-  become_user: vagrant
+  become_user: "{{ ansible_user }}"
   tags:
     - setup
 
