@@ -1,7 +1,6 @@
 ---
 - name: Panoptes app
   hosts: all
-  become: yes
 
   roles:
     - apps/panoptes

@@ -4,6 +4,7 @@
     minute: "22"
     hour: "14"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/reports.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup
 
@@ -13,6 +14,7 @@
     minute: "22"
     hour: "17"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup
 
@@ -22,6 +24,7 @@
     minute: "22"
     hour: "16"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/facebook_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup
 
@@ -31,6 +34,7 @@
     minute: "30"
     hour: "14"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/fetch.py >> /var/log/twitter_fetch/`date \"+\\%Y-\\%m-\\%d-\\%H-\\%M-\\%S\"`.log 2>&1"
+  become: yes
   tags:
     - setup
 
@@ -40,6 +44,7 @@
     minute: "38"
     hour: "21"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/twitter_fetch/graph.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup
 
@@ -49,6 +54,7 @@
     minute: "18"
     hour: "14"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/google_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup
 
@@ -58,5 +64,6 @@
     minute: "45"
     hour: "13"
     job: "{{ home_directory }}/.local/share/virtualenvs/{{ pew_environment_name }}/bin/python3 {{ home_directory }}/{{ app }}/snapchat_fetch/fetch.py 2>&1 | /usr/bin/ifne msmtp root"
+  become: yes
   tags:
     - setup

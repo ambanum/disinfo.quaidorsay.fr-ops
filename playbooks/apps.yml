@@ -1,7 +1,6 @@
 ---
 - name: Setup disinfo.quaidorsay.fr apps
   hosts: all
-  become: yes
 
 - import_playbook: apps/media-scale.yml
 - import_playbook: apps/panoptes.yml

@@ -1,7 +1,6 @@
 ---
 - name: Political-ads-crowdsourcing-server app
   hosts: all
-  become: yes
 
   roles:
     - apps/political-ads-crowdsourcing-server

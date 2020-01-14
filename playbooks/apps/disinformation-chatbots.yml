@@ -1,7 +1,6 @@
 ---
 - name: Disinformation-chatbots app
   hosts: all
-  become: yes
 
   roles:
     - apps/disinformation-chatbots

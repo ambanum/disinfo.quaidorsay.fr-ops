@@ -1,7 +1,6 @@
 ---
 - name: Media-scale app
   hosts: all
-  become: yes
 
   roles:
     - apps/media-scale
