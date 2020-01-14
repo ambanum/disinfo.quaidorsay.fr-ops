@@ -1,6 +1,7 @@
 - name: MRISA – Install required package
   apt:
     pkg:
+      - python3-pip
       - libcurl4-openssl-dev
       - libssl-dev
     state: latest
