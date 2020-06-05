@@ -1,3 +1,4 @@
 .vagrant
 vault.key
 roles/infra/mattermost/files/*
+.DS_Store
