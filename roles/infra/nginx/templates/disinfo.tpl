@@ -131,6 +131,9 @@ server {
     location /twitter-bot-clusters {
         proxy_pass https://ambanum.github.io/DormantTwitterAccountsDetector/;
     }
+    location /encyclopedia {
+        proxy_pass https://ambanum.github.io/disencyclopedia/;
+    }
     location / {
         proxy_pass https://ambanum.github.io/disinfo.quaidorsay.fr/;
     }
