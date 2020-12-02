@@ -5,6 +5,7 @@
       - libcurl4-openssl-dev
       - libssl-dev
     state: latest
+  become: yes
   tags:
     - setup
 
@@ -22,6 +23,7 @@
   pip:
     requirements: "{{ home_directory }}/{{ mrisa_app }}/requirements.txt"
     executable: pip3
+  become: yes
   when: git_clone_app_finished.changed
   tags:
     - setup
