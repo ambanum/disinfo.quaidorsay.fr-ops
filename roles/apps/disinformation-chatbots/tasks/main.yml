@@ -53,6 +53,7 @@
     chdir: "{{ home_directory }}/{{ app }}"
   environment:
     NODE_ENV: production
+    DEBUG: BotometerAnalyser:*
     PORT: "{{ app_port }}"
   tags:
     - restart
