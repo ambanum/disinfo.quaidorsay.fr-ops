@@ -78,8 +78,8 @@ server {
     location /bots {
         proxy_pass http://127.0.0.1:3000/;
     }
-    location /api/cgus {
-        proxy_pass http://51.75.169.235/api/cgus/;
+    location /api/open-document-archive {
+        proxy_pass http://51.75.169.235/api/open-document-archive/;
     }
     location /api/media-scale {
         proxy_pass http://127.0.0.1:3030/media-scale;
