@@ -13,12 +13,12 @@ server {
 }
 server {
     listen 80 default_server;
-    server_name disinfo.quaidorsay.fr;
+    server_name {{ base_url }};
     return 301 https://$server_name$request_uri;
 }
 server {
     listen 443 ssl http2;
-    server_name disinfo.quaidorsay.fr;
+    server_name {{ base_url }};
     ssl_certificate /etc/letsencrypt/live/disinfo.quaidorsay.fr/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/disinfo.quaidorsay.fr/privkey.pem;
     ssl_session_timeout 1d;
@@ -28,12 +28,12 @@ server {
     ssl_session_cache shared:SSL:50m;
 
     location /political-ads-consistency {
-        alias /home/debian/political-ads-consistency/build/;
+        alias /home/{{ ansible_user }}/political-ads-consistency/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
     location /political-ads {
-        alias /home/debian/political-ads-crowdsourcing-client/build/;
+        alias /home/{{ ansible_user }}/political-ads-crowdsourcing-client/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
