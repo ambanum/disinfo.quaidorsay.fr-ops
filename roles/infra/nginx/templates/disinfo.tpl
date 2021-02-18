@@ -3,35 +3,37 @@ upstream backend {
     keepalive 32;
 }
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
+
+# cache pour API CGUs
+proxy_cache_path /dev/shm/nginx-cgu levels=1:2 keys_zone=cgus_cache:10m max_size=1g inactive=1m use_temp_path=off;
+
 server {
     server_name desinfo.quaidorsay.fr;
     rewrite ^/(.*)$ https://disinfo.quaidorsay.fr/$1 redirect;
 }
 server {
     listen 80 default_server;
-    server_name {{ base_url }};
-{% if enable_https %}
+    server_name disinfo.quaidorsay.fr;
     return 301 https://$server_name$request_uri;
 }
 server {
     listen 443 ssl http2;
-    server_name {{ base_url }};
+    server_name disinfo.quaidorsay.fr;
     ssl_certificate /etc/letsencrypt/live/disinfo.quaidorsay.fr/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/disinfo.quaidorsay.fr/privkey.pem;
     ssl_session_timeout 1d;
-    ssl_protocols TLSv1.2;
+    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
     ssl_prefer_server_ciphers on;
     ssl_session_cache shared:SSL:50m;
-{% endif %}
 
     location /political-ads-consistency {
-        alias /home/{{ ansible_user }}/political-ads-consistency/build/;
+        alias /home/debian/political-ads-consistency/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
     location /political-ads {
-        alias /home/{{ ansible_user }}/political-ads-crowdsourcing-client/build/;
+        alias /home/debian/political-ads-crowdsourcing-client/build/;
         index index.html;
         try_files $uri $uri/ index.html =404;
     }
@@ -78,8 +80,15 @@ server {
     location /bots {
         proxy_pass http://127.0.0.1:3000/;
     }
-    location /api/open-document-archive {
-        proxy_pass http://51.75.169.235/api/open-document-archive/;
+    location /api/cgus {
+        proxy_pass http://51.75.169.235/api/cgus/;
+        proxy_cache cgus_cache;
+        proxy_cache_valid 1m;
+    }
+    location /api/open-terms-archive {
+        proxy_pass http://51.75.169.235/api/open-terms-archive/;
+        proxy_cache cgus_cache;
+        proxy_cache_valid 1m;
     }
     location /api/media-scale {
         proxy_pass http://127.0.0.1:3030/media-scale;
