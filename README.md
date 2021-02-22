@@ -7,7 +7,9 @@ Recipes to setup infrastructure and deploy disinfo.quaidorsay.fr website and API
 ## Requirements
 
 - Install [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-- Install required Ansible roles `ansible-galaxy install -r requirements.yml`
+- Install required Ansible roles `ansible-galaxy install -r requirements.yml` 
+
+See [troubleshooting](#troubleshooting) in case of errors
 
 ### [For developement only] Additionals dependencies
 
@@ -51,12 +53,12 @@ config.vm.network "private_network", ip: "192.168.33.10"
 
 ## Usage
 
-To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM. Note that the VM need to be started before with `vagrant up`.\
+To avoid making changes on the production server by mistake, by default all commands will only affect the vagrant developement VM. Note that the VM needs to be started before with `vagrant up`.\
 To execute commands on the production server you should specify it by adding the option `-i inventories/production.yml` to the following commands.
 
 - **Setup a phoenix server:**
 
-  Before all, following backup steps are required:
+  Before all, following backup steps are **required**:
   - Create a dump of the Mattermost MySQL database on the remote server with `mysqldump -u root mattermost -p -r /tmp/dump.sql`.
   - Copy the resulting dump to the Mattermost role's `files` directory of this project on your local machine with: `scp -r -p cloud@disinfo.quaidorsay.fr:/tmp/dump.sql ./roles/infra/mattermost/files`.
   - Create a copy of Mattermost `data` files with `sudo cp -a /opt/mattermost/data/ /tmp/mattermost/data`
@@ -140,11 +142,7 @@ ansible-playbook playbooks/apps/panoptes.yml -t restart
 
 ### Troubleshooting
 
-If you have the following error:
-
-```
-Failed to connect to the host via ssh: Received disconnect from 127.0.0.1 port 2222:2: Too many authentication failures
-```
+#### Failed to connect to the host via ssh: Received disconnect from 127.0.0.1 port 2222:2: Too many authentication failures
 
 Modify ansible ssh options to the `inventories/dev.yml` file like this:
 ```
@@ -158,3 +156,27 @@ all:
           ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o IdentitiesOnly=yes
           […]
 ```
+
+#### ansible: command not found
+if you're on mac OSX and tried to install with `pip install ansible`
+you may need to add python's bin folder to your path with
+
+```
+export PATH=$PATH:/Users/<yourusername>/Library/Python/3.7/bin
+```
+
+#### ~/.netrc access too permissive: access permissions must restrict access to only the owner
+
+on linux
+```
+chmod og-rw /home/<yourusername>/.netrc
+```
+
+on mac OSX
+```
+chmod og-rw /Users/<yourusername>/.netrc
+```
+
+#### <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)>
+
+on mac OSX, go to folder `/Applications/Python 3.9` and double click on `Install Certificates.command`
