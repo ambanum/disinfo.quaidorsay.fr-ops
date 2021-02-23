@@ -58,12 +58,18 @@ To execute commands on the production server you should specify it by adding the
 
 - **Setup a phoenix server:**
 
-  Before all, following backup steps are **required**:
-  - Create a dump of the Mattermost MySQL database on the remote server with `mysqldump -u root mattermost -p -r /tmp/dump.sql`.
-  - Copy the resulting dump to the Mattermost role's `files` directory of this project on your local machine with: `scp -r -p cloud@disinfo.quaidorsay.fr:/tmp/dump.sql ./roles/infra/mattermost/files`.
-  - Create a copy of Mattermost `data` files with `sudo cp -a /opt/mattermost/data/ /tmp/mattermost/data`
-  - Changes Mattermost `data` files permissions `sudo chown cloud -R /tmp/mattermost/data`
-  - Copy Mattermost `data` files to the Mattermost role's `files` directory of this project on your local machine with: `scp -r -p cloud@disinfo.quaidorsay.fr:/tmp/mattermost/data ./roles/infra/mattermost/files`.
+Before all, following backup steps are **required**:
+
+Prepare data to be copied on the server
+  - Login to disinfo server
+  - Create a dump of the Mattermost MySQL database on the remote server with `mysqldump -u root mattermost -p -r /tmp/dump.sql`. (You will find the password by decrypting the password file `ansible vault decrypt inventories/group_vars/all/vault.yml` and looking for `vault_mysql_root_password`)
+  - Create a copy of Mattermost `data` files with `mkdir -p /tmp/mattermost/data && sudo cp -a /opt/mattermost/data/ /tmp/mattermost`
+  - Changes Mattermost `data` files permissions `sudo chown debian -R /tmp/mattermost/data`
+  - Logout of disinfo server
+  
+Copy exported data on your local machine
+  - Copy the resulting dump to the Mattermost role's `files` on your local machine with: `scp -r -p debian@disinfo.quaidorsay.fr:/tmp/dump.sql ./roles/infra/mattermost/files`.
+  - Copy Mattermost `data` files to the Mattermost role's `files` on your local machine with: `scp -r -p debian@disinfo.quaidorsay.fr:/tmp/mattermost/data ./roles/infra/mattermost/files`.
   - Copy all scrapped political ads data to the new server directly (there is more than 500Go). Connect to `disinfo.quaidorsay.fr` server and run: `rsync -azP /mnt/data/political-ads-scraper/ cloud@sismo.quaidorsay.fr:/mnt/data/political-ads-scraper`.
 
 ```
