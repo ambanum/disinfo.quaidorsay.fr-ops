@@ -7,5 +7,5 @@ all:
           ansible_user: vagrant
           ansible_ssh_extra_args: -o StrictHostKeyChecking=no
           ansible_python_interpreter: /usr/bin/python3
-          base_url: http://vagrant.local
+          base_url: http://disinfo.local
           enable_https: false
