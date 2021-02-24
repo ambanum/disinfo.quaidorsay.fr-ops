@@ -163,6 +163,8 @@ all:
           […]
 ```
 
+Or alternatively you can use the dev-fix config by appending `-i ops/inventories/dev-fix.yml`
+
 #### ansible: command not found
 if you're on mac OSX and tried to install with `pip install ansible`
 you may need to add python's bin folder to your path with
