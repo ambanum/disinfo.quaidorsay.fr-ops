@@ -29,12 +29,12 @@ Get the password from the administrator and copy it in a `vault.key` file at the
 
 Edit your hosts file `/etc/hosts`, add the following line so you can connect to the VM to test deployed apps from your host machine's browser:
 ```
-192.168.33.10    vagrant.local
+192.168.33.10    disinfo.local
 ```
 
 Now on your browser you will be able to access deployed app on the VM with the URL `http://vagrant.local`
 
-The server name `vagrant.local` can be changed in the file `/inventories/dev.yml`:
+The server name `disinfo.local` can be changed in the file `/inventories/dev.yml`:
 ```
 […]
     dev:
@@ -162,6 +162,8 @@ all:
           ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o IdentitiesOnly=yes
           […]
 ```
+
+Or alternatively you can use the dev-fix config by appending `-i ops/inventories/dev-fix.yml`
 
 #### ansible: command not found
 if you're on mac OSX and tried to install with `pip install ansible`
