@@ -88,6 +88,10 @@ server {
         proxy_pass http://127.0.0.1:3000/;
     }
 
+    location /preprod/api/open-terms-archive {
+        proxy_pass http://51.75.169.235:7012$request_uri;
+    }
+
     location /api/open-terms-archive {
         proxy_pass http://51.75.169.235/api/open-terms-archive/;
         proxy_cache cgus_cache;
