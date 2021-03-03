@@ -1,0 +1,12 @@
+---
+- name: Setup disinfo.quaidorsay.fr infra
+  hosts: all
+  become: yes
+
+- import_playbook: ../../playbooks/infra/common.yml
+- import_playbook: ../../playbooks/infra/certbot.yml
+- import_playbook: ../../playbooks/infra/mysql.yml
+- import_playbook: ../../playbooks/infra/nginx.yml
+- import_playbook: ../../playbooks/infra/mattermost.yml
+- import_playbook: ../../playbooks/infra/node.yml
+- import_playbook: ../../playbooks/infra/mongodb.yml

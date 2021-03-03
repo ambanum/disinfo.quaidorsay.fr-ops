@@ -1,0 +1,13 @@
+---
+- name: Add ota conf in sites-available
+  template:
+    src: ../templates/ota.tpl
+    dest: /etc/nginx/sites-available/ota
+  notify: restart nginx
+
+- name: Link ota conf from sites-available to sites-enabled
+  file:
+    src: /etc/nginx/sites-available/ota
+    dest: /etc/nginx/sites-enabled/ota
+    state: link
+  notify: restart nginx

@@ -1,0 +1,7 @@
+---
+- name: Github
+  hosts: all
+  become: yes
+
+  roles:
+    - infra/github

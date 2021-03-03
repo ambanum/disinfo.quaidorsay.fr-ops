@@ -1,0 +1,10 @@
+---
+- name: Setup ota infra
+  hosts: all
+  become: yes
+
+- import_playbook: ../../playbooks/infra/common.yml
+- import_playbook: ../../playbooks/infra/docker.yml
+- import_playbook: ../../playbooks/infra/nginx.yml
+- import_playbook: ../../playbooks/infra/github.yml
+- import_playbook: ./playbooks/infra/nginx.yml

@@ -11,7 +11,7 @@ Recipes to setup infrastructure and deploy disinfo.quaidorsay.fr website and API
 
 See [troubleshooting](#troubleshooting) in case of errors
 
-### [For developement only] Additionals dependencies
+### [For development only] Additionals dependencies
 
 To test the changes without impacting the production server, a Vagrantfile is provided to test the changes locally in a virtual machine. VirtualBox and Vagrant are therefore required.
 
@@ -29,27 +29,13 @@ Get the password from the administrator and copy it in a `vault.key` file at the
 
 Edit your hosts file `/etc/hosts`, add the following line so you can connect to the VM to test deployed apps from your host machine's browser:
 ```
-192.168.33.10    disinfo.local
+192.168.33.11    disinfo.local
+192.168.33.12    ota.local
 ```
 
-Now on your browser you will be able to access deployed app on the VM with the URL `http://vagrant.local`
+Now on your browser you will be able to access deployed app on the VM with the URL `http://disinfo.local` and  `http://ota.local` to mimic the real architecture of our servers
 
-The server name `disinfo.local` can be changed in the file `/inventories/dev.yml`:
-```
-[…]
-    dev:
-      hosts:
-        '127.0.0.1':
-          […]
-          base_url: <SERVER_NAME>
-```
-
-The guest VM's IP can be changed in the `VagrantFile`:
-```
-[…]
-config.vm.network "private_network", ip: "192.168.33.10"
-[…]
-```
+The guest VM's IPs can be changed in the `VagrantFile`:
 
 ## Usage
 
@@ -145,6 +131,26 @@ ansible-playbook playbooks/apps/media-scale.yml -t update
 ```
 ansible-playbook playbooks/apps/panoptes.yml -t restart
 ```
+
+### commands
+
+In order to deploy here are the corresponding commands
+TODO: make a deploy script
+
+
+
+```
+deploy:local:disinfo		ansible-playbook servers/disinfo/site.yml -i inventories/dev-fix.yml
+deploy:local:disinfo:nginx  ansible-playbook playbooks/infra/nginx.yml -i inventories/dev-fix.yml
+deploy:local:disinfo:docker ansible-playbook playbooks/infra/docker.yml -i inventories/dev-fix.yml
+deploy:disinfo          	ansible-playbook servers/disinfo/site.yml -i inventories/production.yml --check --diff
+deploy:disinfo:nginx        ansible-playbook playbooks/infra/nginx.yml -i inventories/production.yml --check --diff
+
+deploy:local:ota	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
+deploy:ota       	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
+```
+
+
 
 ### Troubleshooting
 
