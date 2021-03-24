@@ -15,3 +15,5 @@
   service:
     name: mongod
     state: restarted
+
+# sudo docker run -d -v /var/lib/mongodb:/data/db --name mongo-on-docker  -p 27017:27017 mongo
