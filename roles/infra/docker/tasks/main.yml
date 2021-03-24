@@ -27,6 +27,11 @@
     - docker-ce
     - docker-ce-cli
     - containerd.io
+    - python3
+    - python-docker
+- name: Install docker with pip
+  pip:
+    name: docker
 - name: Assure that docker is started
   service:
     name: docker

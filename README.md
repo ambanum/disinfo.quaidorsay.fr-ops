@@ -145,6 +145,7 @@ deploy:local:disinfo:nginx  ansible-playbook playbooks/infra/nginx.yml -i invent
 deploy:local:disinfo:docker ansible-playbook playbooks/infra/docker.yml -i inventories/dev-fix.yml
 deploy:disinfo          	ansible-playbook servers/disinfo/site.yml -i inventories/production.yml --check --diff
 deploy:disinfo:nginx        ansible-playbook playbooks/infra/nginx.yml -i inventories/production.yml --check --diff
+deploy:disinfo:docker        ansible-playbook playbooks/infra/docker.yml -i inventories/production.yml --check --diff
 
 deploy:local:ota	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
 deploy:ota       	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
