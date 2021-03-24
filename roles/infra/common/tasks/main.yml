@@ -4,5 +4,7 @@
     pkg:
     - build-essential
     - git
+    - nano
+    - telnet
     update_cache: yes
     state: latest
