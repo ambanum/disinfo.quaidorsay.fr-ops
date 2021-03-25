@@ -88,16 +88,33 @@ server {
         proxy_pass http://127.0.0.1:3000/;
     }
 
+    ###
+    # Open Terms Archive
+    ###
     location /preprod/api/open-terms-archive {
-        proxy_pass http://51.75.169.235:7012$request_uri;
+      proxy_pass http://51.75.169.235:7012$request_uri;
     }
 
     location /api/open-terms-archive {
-        proxy_pass http://51.75.169.235/api/open-terms-archive/;
-        proxy_cache cgus_cache;
-        proxy_cache_valid 1m;
+      proxy_pass http://51.75.169.235/api/open-terms-archive/;
+      proxy_cache cgus_cache;
+      proxy_cache_valid 1m;
     }
 
+    ###
+    # Information Manipulation Analyzer
+    ###
+    location /preprod/information-manipulation-analyzer {
+      proxy_pass http://51.89.231.68:7022$request_uri;
+    }
+
+    location /information-manipulation-analyzer {
+        proxy_pass http://51.89.231.68:7021$request_uri;
+    }
+
+    ###
+    # Other
+    ###
     location /api/media-scale {
         proxy_pass http://127.0.0.1:3030/media-scale;
     }
