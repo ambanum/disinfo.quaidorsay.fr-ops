@@ -96,7 +96,7 @@ server {
     }
 
     location /api/open-terms-archive {
-      proxy_pass http://51.75.169.235/api/open-terms-archive/;
+      proxy_pass http://51.75.169.235:7011$request_uri;
       proxy_cache cgus_cache;
       proxy_cache_valid 1m;
     }
