@@ -7,7 +7,7 @@ Recipes to setup infrastructure and deploy disinfo.quaidorsay.fr website and API
 ## Requirements
 
 - Install [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-- Install required Ansible roles `ansible-galaxy install -r requirements.yml` 
+- Install required Ansible roles `ansible-galaxy install -r requirements.yml`
 
 See [troubleshooting](#troubleshooting) in case of errors
 
@@ -52,7 +52,7 @@ Prepare data to be copied on the server
   - Create a copy of Mattermost `data` files with `mkdir -p /tmp/mattermost/data && sudo cp -a /opt/mattermost/data/ /tmp/mattermost`
   - Changes Mattermost `data` files permissions `sudo chown debian -R /tmp/mattermost/data`
   - Logout of disinfo server
-  
+
 Copy exported data on your local machine
   - Copy the resulting dump to the Mattermost role's `files` on your local machine with: `scp -r -p debian@disinfo.quaidorsay.fr:/tmp/dump.sql ./roles/infra/mattermost/files`.
   - Copy Mattermost `data` files to the Mattermost role's `files` on your local machine with: `scp -r -p debian@disinfo.quaidorsay.fr:/tmp/mattermost/data ./roles/infra/mattermost/files`.
@@ -140,15 +140,16 @@ TODO: make a deploy script
 
 
 ```
-deploy:local:disinfo		ansible-playbook servers/disinfo/site.yml -i inventories/dev-fix.yml
+deploy:local:disinfo		    ansible-playbook servers/disinfo/site.yml -i inventories/dev-fix.yml
 deploy:local:disinfo:nginx  ansible-playbook playbooks/infra/nginx.yml -i inventories/dev-fix.yml
 deploy:local:disinfo:docker ansible-playbook playbooks/infra/docker.yml -i inventories/dev-fix.yml
-deploy:disinfo          	ansible-playbook servers/disinfo/site.yml -i inventories/production.yml --check --diff
+deploy:disinfo          	  ansible-playbook servers/disinfo/site.yml -i inventories/production.yml --check --diff
 deploy:disinfo:nginx        ansible-playbook playbooks/infra/nginx.yml -i inventories/production.yml --check --diff
-deploy:disinfo:docker        ansible-playbook playbooks/infra/docker.yml -i inventories/production.yml --check --diff
+deploy:disinfo:docker       ansible-playbook playbooks/infra/docker.yml -i inventories/production.yml --check --diff
+deploy:disinfo:mongo        ansible-playbook playbooks/infra/mongodb.yml -i inventories/production.yml --check --diff
 
-deploy:local:ota	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
-deploy:ota       	        ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
+deploy:local:ota	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
+deploy:ota       	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
 ```
 
 

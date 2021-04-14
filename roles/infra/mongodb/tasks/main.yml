@@ -1,19 +1,34 @@
----
-- name: Import the public key used by the package management system
-  shell: wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
+- name: pull docker mongo image
+  docker_image:
+    source: pull
+    name: mongo
+    tag: "{{ mongo_version }}"
 
-- name: Create a apt list file for MongoDB
-  shell: echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+- name: ensure {{ mongodb_host_dir }} exist
+  file:
+    name: "{{ mongodb_host_dir }}"
+    state: directory
 
-- name: Install MongoDB
+- name: Start mongo container
+  community.general.docker_container:
+    name: 'mongodb'
+    image: 'mongo'
+    restart: yes
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ mongodb_host_dir }}:/data/db"
+
+- name: Install iptables
   apt:
-    name: mongodb-org
+    pkg:
+    - iptables
+    - iptables-persistent
     update_cache: yes
     state: latest
 
-- name: Start MongoDB service
-  service:
-    name: mongod
-    state: restarted
+- name: Block mongo port with iptables
+  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27017 --ctdir ORIGINAL -j DROP
 
-# sudo docker run -d -v /var/lib/mongodb:/data/db --name mongo-on-docker  -p 27017:27017 mongo
+- name: Write iptables rules to be launched again on reboot and remove duplicates
+  ansible.builtin.shell: iptables-save | uniq | iptables-restore
