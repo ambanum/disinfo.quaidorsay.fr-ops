@@ -104,6 +104,14 @@ server {
     ###
     # Information Manipulation Analyzer
     ###
+    location /preprod/tflmi {
+      proxy_pass http://51.89.231.68:7024$request_uri;
+    }
+
+    location /tflmi {
+        proxy_pass http://51.89.231.68:7023$request_uri;
+    }
+
     location /preprod/information-manipulation-analyzer {
       proxy_pass http://51.89.231.68:7022$request_uri;
     }
