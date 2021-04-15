@@ -27,6 +27,10 @@ http {
 	include /etc/nginx/mime.types;
 	default_type application/octet-stream;
 
+	# Putting this will make IMA very slow
+	#fastcgi_read_timeout 600;
+	#proxy_read_timeout 600;
+
 	##
 	# SSL Settings
 	##

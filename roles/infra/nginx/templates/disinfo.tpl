@@ -109,7 +109,7 @@ server {
     }
 
     location /tflmi {
-        proxy_pass http://51.89.231.68:7023$request_uri;
+      proxy_pass http://51.89.231.68:7023$request_uri;
     }
 
     location /preprod/information-manipulation-analyzer {
@@ -117,7 +117,7 @@ server {
     }
 
     location /information-manipulation-analyzer {
-        proxy_pass http://51.89.231.68:7021$request_uri;
+      proxy_pass http://51.89.231.68:7021$request_uri;
     }
 
     ###
