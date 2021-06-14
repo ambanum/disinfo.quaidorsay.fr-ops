@@ -11,19 +11,25 @@
 
 - name: Start mongo container
   community.general.docker_container:
-    name: 'mongodb'
-    image: 'mongo'
+    name: "mongodb"
+    image: "mongo"
     restart: yes
     state: started
     restart_policy: unless-stopped
     volumes:
       - "{{ mongodb_host_dir }}:/data/db"
 
+# sudo iptables-save | uniq  | sudo iptables-restore
+# sudo docker stop ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1
+# sudo docker rm mongodb
+# sudo docker run -d -v /var/lib/mongodb:/data/db --name mongodb -p 27017:27017 mongo
+# sudo docker start ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1
+
 - name: Install iptables
   apt:
     pkg:
-    - iptables
-    - iptables-persistent
+      - iptables
+      - iptables-persistent
     update_cache: yes
     state: latest
 
