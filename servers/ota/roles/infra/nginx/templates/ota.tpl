@@ -1,3 +1,6 @@
+proxy_cache_path /dev/shm/nginx-ota levels=1:2 keys_zone=ota_cache:10m max_size=1g inactive=1m use_temp_path=off;
+
+
 server {
   server_name opentermsarchive.org www.opentermsarchive.org;
 
@@ -6,10 +9,15 @@ server {
     return 200 'opentermsarchive.org up and running!';
   }
 
+  location /api/open-terms-archive {
+    proxy_pass http://51.75.169.235:7011$request_uri;
+    proxy_cache otas_cache;
+    proxy_cache_valid 1m;
+  }
+
   location / {
     proxy_pass http://51.75.169.235:7021$request_uri;
   }
-
 
   listen 443 ssl; # managed by Certbot
   ssl_certificate /etc/letsencrypt/live/opentermsarchive.org/fullchain.pem; # managed by Certbot
@@ -24,6 +32,10 @@ server {
   location /health-check {
     add_header Content-Type text/plain always;
     return 200 'preprod.opentermsarchive.org up and running!';
+  }
+
+  location /api/open-terms-archive {
+    proxy_pass http://51.75.169.235:7012$request_uri;
   }
 
   location / {
