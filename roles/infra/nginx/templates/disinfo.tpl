@@ -101,14 +101,6 @@ server {
       proxy_cache_valid 1m;
     }
 
-    location /preprod/open-terms-archive {
-      proxy_pass http://51.75.169.235:7022$request_uri;
-    }
-
-    location /open-terms-archive {
-      proxy_pass http://51.75.169.235:7021$request_uri;
-    }
-
     ###
     # Information Manipulation Analyzer
     ###
