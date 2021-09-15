@@ -105,22 +105,27 @@ server {
     # Information Manipulation Analyzer
     ###
     location /preprod/tflmi {
+      proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7823$request_uri;
     }
 
     location /ambnum {
+      proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7025$request_uri;
     }
 
     location /tflmi {
+      proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7023$request_uri;
     }
 
     location /preprod/information-manipulation-analyzer {
+      proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7821$request_uri;
     }
 
     location /information-manipulation-analyzer {
+      proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7021$request_uri;
     }
 
