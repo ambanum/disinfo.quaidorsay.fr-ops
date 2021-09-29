@@ -114,6 +114,11 @@ server {
       proxy_pass http://51.89.231.68:7025$request_uri;
     }
 
+    location /cyber {
+      proxy_read_timeout 310s;
+      proxy_pass http://51.89.231.68:7027$request_uri;
+    }
+
     location /tflmi {
       proxy_read_timeout 310s;
       proxy_pass http://51.89.231.68:7023$request_uri;
