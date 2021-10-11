@@ -4,9 +4,6 @@ upstream backend {
 }
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=mattermost_cache:10m max_size=3g inactive=120m use_temp_path=off;
 
-# cache pour API CGUs
-proxy_cache_path /dev/shm/nginx-cgu levels=1:2 keys_zone=cgus_cache:10m max_size=1g inactive=1m use_temp_path=off;
-
 server {
     server_name desinfo.quaidorsay.fr;
     rewrite ^/(.*)$ https://disinfo.quaidorsay.fr/$1 redirect;
@@ -86,19 +83,6 @@ server {
     }
     location /bots {
         proxy_pass http://127.0.0.1:3000/;
-    }
-
-    ###
-    # Open Terms Archive
-    ###
-    location /preprod/api/open-terms-archive {
-      proxy_pass http://51.75.169.235:7012$request_uri;
-    }
-
-    location /api/open-terms-archive {
-      proxy_pass http://51.75.169.235:7011$request_uri;
-      proxy_cache cgus_cache;
-      proxy_cache_valid 1m;
     }
 
     ###

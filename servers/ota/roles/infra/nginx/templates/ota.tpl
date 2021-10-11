@@ -1,6 +1,5 @@
 proxy_cache_path /dev/shm/nginx-ota levels=1:2 keys_zone=ota_cache:10m max_size=1g inactive=1m use_temp_path=off;
 
-
 server {
   server_name opentermsarchive.org www.opentermsarchive.org;
 
@@ -9,9 +8,14 @@ server {
     return 200 'opentermsarchive.org up and running!';
   }
 
+  location /data/api {
+    proxy_pass http://51.75.169.235:7011$request_uri;
+  }
+
+  # deprecated
   location /api/open-terms-archive {
     proxy_pass http://51.75.169.235:7011$request_uri;
-    proxy_cache otas_cache;
+    proxy_cache ota_cache;
     proxy_cache_valid 1m;
   }
 
@@ -34,7 +38,12 @@ server {
     return 200 'preprod.opentermsarchive.org up and running!';
   }
 
+  # deprecated
   location /api/open-terms-archive {
+    proxy_pass http://51.75.169.235:7012$request_uri;
+  }
+
+  location /data/api {
     proxy_pass http://51.75.169.235:7012$request_uri;
   }
 
