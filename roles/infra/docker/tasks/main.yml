@@ -10,14 +10,17 @@
     - curl
     - gnupg-agent
     - software-properties-common
+
 - name: add docker GPG key
   apt_key:
     url: https://download.docker.com/linux/debian/gpg
     state: present
+
 - name: add docker repository to apt
   apt_repository:
     repo: deb https://download.docker.com/linux/debian buster stable
     state: present
+
 - name: install docker
   apt:
     name: "{{item}}"
@@ -29,9 +32,15 @@
     - containerd.io
     - python3
     - python-docker
+
 - name: Install docker with pip
   pip:
     name: docker
+
+- name: Install docker-compose with pip
+  pip:
+    name: docker-compose
+
 - name: Assure that docker is started
   service:
     name: docker
