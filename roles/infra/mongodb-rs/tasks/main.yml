@@ -1,0 +1,75 @@
+- name: ensure {{ mongodb_host_dir }} exist
+  file:
+    name: '{{ mongodb_host_dir }}'
+    state: directory
+
+- name: Ensure urls are present in the /etc/hosts file
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '172.17.0.1      mongo1 mongo2 mongo3'
+    line: '172.17.0.1      mongo1 mongo2 mongo3'
+
+# incase something goes wrong on the database you need to log into the server and launch
+# sudo iptables-save | uniq  | sudo iptables-restore
+# sudo docker stop ima-preproduction ima-tflmi-production ima-production ima-processor-production-3 ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production  ima-cyber-production ima-processor-cyber-production-1 ima-processor-cyber-production-2
+# 
+# Then on your machine in ops repo folder
+# ansible-playbook playbooks/infra/mongodb-rs.yml -i inventories/production.yml --check --diff
+#
+# Then, restart all processors
+# sudo docker start ima-preproduction ima-tflmi-production ima-production ima-processor-production-3 ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production  ima-cyber-production ima-processor-cyber-production-1 ima-processor-cyber-production-2
+
+- name: Start mongo in replica set mode
+  community.docker.docker_compose:
+    project_name: mongo-rs
+    definition:
+      version: '3.8'
+      services:
+        mongo1:
+          image: mongo:{{ mongo_version }}
+          container_name: mongo1
+          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27017']
+          volumes:
+            - "{{ mongodb_host_dir }}/db1:/data/db"
+          ports:
+            - 27017:27017
+          healthcheck:
+            test: test $$(echo "rs.instantiate({'_id':'rs0','protocolVersion':1,'version':1,members:[{_id:0,host:'mongo1:27017'},{_id:1,host:'mongo2:27018'},{_id:2,host:'mongo3:27019'}],settings:{chainingAllowed:true}},{force:true}).ok || rs.status().ok" | mongo --port 27017 --quiet) -eq 1
+            interval: 90d
+            start_period: 30s
+
+        mongo2:
+          image: mongo:{{ mongo_version }}
+          container_name: mongo2
+          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27018']
+          volumes:
+            - "{{ mongodb_host_dir }}/db2/:/data/db"
+          ports:
+            - 27018:27018
+
+        mongo3:
+          image: mongo:{{ mongo_version }}
+          container_name: mongo3
+          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27019']
+          volumes:
+            - "{{ mongodb_host_dir }}/db3/:/data/db"
+          ports:
+            - 27019:27019
+
+- name: Install iptables
+  apt:
+    pkg:
+      - iptables
+      - iptables-persistent
+    update_cache: yes
+    state: latest
+
+- name: Block mongo port 27017 with iptables
+  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27017 --ctdir ORIGINAL -j DROP
+- name: Block mongo port 27018 with iptables
+  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27018 --ctdir ORIGINAL -j DROP
+- name: Block mongo port 27019 with iptables
+  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27019 --ctdir ORIGINAL -j DROP
+
+- name: Write iptables rules to be launched again on reboot and remove duplicates
+  ansible.builtin.shell: iptables-save | uniq | iptables-restore
