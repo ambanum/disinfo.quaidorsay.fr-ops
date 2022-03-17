@@ -165,6 +165,9 @@ deploy:disinfo:mongo        ansible-playbook playbooks/infra/mongodb.yml -i inve
 
 deploy:local:ota	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
 deploy:ota       	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
+
+mongo:restart	              ansible-playbook playbooks/infra/mongodb.yml -i inventories/production.yml --tags restart
+
 ```
 
 ### Troubleshooting

@@ -1,41 +1,168 @@
-- name: pull docker mongo image
-  docker_image:
-    source: pull
-    name: mongo
-    tag: "{{ mongo_version }}"
 
-- name: ensure {{ mongodb_host_dir }} exist
-  file:
-    name: "{{ mongodb_host_dir }}"
-    state: directory
+- name: Optimize Linux for MongoDB
+  include: system_optimization.yml
+  tags: [system]
 
-- name: Start mongo container
-  community.general.docker_container:
-    name: "mongodb"
-    image: "mongo"
-    restart: yes
-    state: started
-    restart_policy: unless-stopped
-    volumes:
-      - "{{ mongodb_host_dir }}:/data/db"
+# See https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+- name: Import the MongoDB public key used by the package management system
+  shell: wget -qO - https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc | sudo apt-key add -
 
-# there is a `relaunch_after_restart.sh` on the server
-# sudo iptables-save | uniq  | sudo iptables-restore
-# sudo docker stop ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production
-# sudo docker rm mongodb
-# sudo docker run -d -v /var/lib/mongodb:/data/db --name mongodb -p 27017:27017 mongo
-# sudo docker start ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production
+- name: Create an apt list file for MongoDB
+  shell: echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/{{ mongodb_version }} main" | sudo tee /etc/apt/sources.list.d/mongodb-org-{{ mongodb_version }}.list
 
-- name: Install iptables
+- name: Install MongoDB
   apt:
-    pkg:
-      - iptables
-      - iptables-persistent
+    name: mongodb-org
     update_cache: yes
     state: latest
 
-- name: Block mongo port with iptables
-  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27017 --ctdir ORIGINAL -j DROP
+- name: Add mongod.conf
+  copy:
+    src: mongod.conf
+    dest: '/etc/mongod.conf'
 
-- name: Write iptables rules to be launched again on reboot and remove duplicates
-  ansible.builtin.shell: iptables-save | uniq | iptables-restore
+- name: Create data directory
+  file:
+    path: {{ mongodb_host_dir }}
+    state: directory
+
+- name: Set database files permissions
+  ansible.builtin.file:
+    path: {{ mongodb_host_dir }}
+    owner: mongodb
+    group: mongodb
+    recurse: yes
+
+- name: Set log permissions
+  ansible.builtin.file:
+    path: /var/log/mongodb/
+    owner: mongodb
+    group: mongodb
+    recurse: yes
+
+- name: Start MongoDB service
+  service:
+    name: mongod
+    state: restarted
+  tags: 
+    - restart
+
+# - name: Give access to mongodb from within docker containers
+#   ansible.builtin.command: iptables -A INPUT -p tcp --dport 27017 -s 172.17.0.0/16 -j ACCEPT
+
+# - name: Drop access to mongodb from everywhere else
+#   ansible.builtin.command: iptables -A INPUT -p tcp --dport 27017 -j DROP
+
+# - name: Remove duplicates
+#   ansible.builtin.command: iptables-save | uniq |iptables-restore
+#   become: true 
+
+
+
+# sudo iptables -D INPUT -p tcp --dport 27017 -j DROP
+# sudo iptables -D INPUT -p tcp --dport 27017 -s 172.17.0.0/16 -j ACCEPT
+# sudo iptables -D INPUT -p tcp --dport 27017 -s 127.0.0.1 -j ACCEPT
+
+
+# sudo iptables -A INPUT -p tcp --dport 27017 -s 172.17.0.0/16 -j ACCEPT
+# sudo iptables -A INPUT -p tcp --dport 27017 -s 127.0.0.1 -j ACCEPT
+# sudo iptables -A INPUT -p tcp --dport 27017 -s disinfo.quaidorsay.fr -j ACCEPT
+# sudo iptables -A INPUT -p tcp --dport 27017 -j DROP
+
+# sudo iptables-save |sudo  uniq | sudo iptables-restore
+
+
+
+
+# # See https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+# - name: Import the MongoDB public key used by the package management system
+#   shell: wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+
+# - name: Create an apt list file for MongoDB
+#   shell: echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+
+# - name: Install MongoDB
+#   apt:
+#     name: mongodb-org
+#     update_cache: yes
+#     state: latest
+
+# - name: Stop MongoDB rs 3
+#   shell: mongod --shutdown --dbpath /mnt/mongodb-rs/db3
+#   ignore_errors: yes
+#   become: true
+#   tags:
+#     - stop
+#     - restart
+# - name: Stop MongoDB rs 2
+#   shell: mongod --shutdown --dbpath /mnt/mongodb-rs/db2
+#   ignore_errors: yes
+#   become: true
+#   tags:
+#     - stop
+#     - restart
+# - name: Stop MongoDB rs 1
+#   shell: mongod --shutdown --dbpath {{ mongodb_host_dir }}
+#   ignore_errors: yes
+#   become: true
+#   tags:
+#     - stop
+#     - restart
+
+# - name: Remove lock files on mongodb
+#   file:
+#     path: "{{ item }}"
+#     state: absent
+#   with_items:
+#     - "{{ mongodb_host_dir }}/mongod.lock"
+#     - "/mnt/mongodb-rs/db2/mongod.lock"
+#     - "/mnt/mongodb-rs/db3/mongod.lock"
+
+# - name: Start MongoDB rs 1
+#   # shell: mongod --port 27017 --storageEngine wiredTiger --dbpath {{ mongodb_host_dir }} --replSet rs0 --bind_ip_all &
+#   shell: mongod --port 27017 --storageEngine wiredTiger --dbpath {{ mongodb_host_dir }} --bind_ip_all &
+#   become: true
+#   tags:
+#     - start
+#     - restart
+# #     name: mongod
+# #     state: restarted
+# #     args: --port 27017 --storageEngine wiredTiger --dbpath {{ mongodb_host_dir }} --replSet rs0 --bind_ip_all
+
+# # - name: Enable sharding on the database and collection
+# #      command: /usr/bin/mongo localhost:${mongos_port}/admin -u admin -p ${mongo_admin_pass} /tmp/enablesharding.js
+
+# # https://github.com/openedx/configuration/blob/master/playbooks/roles/mongo_2_6/tasks/main.yml
+# # - name: Wait for mongo server to start
+# #   wait_for:
+# #     port: 27017
+# #     delay: 2
+# #   tags:
+# #     - manage
+# #     - manage:start
+
+
+
+# - name: Start MongoDB rs 2
+#   shell: mongod --port 27018 --storageEngine wiredTiger --dbpath /mnt/mongodb-rs/db2 --replSet rs0 --bind_ip_all &
+#   become: true
+#   tags:
+#     - start
+#     - restart
+
+# - name: Start MongoDB rs 3
+#   shell: mongod --port 27019 --storageEngine wiredTiger --dbpath /mnt/mongodb-rs/db3 --replSet rs0 --bind_ip_all &
+#   become: true
+#   tags:
+#     - start
+#     - restart
+
+
+# # rs.reconfig( {
+# #    _id : "rs0",
+# #    members: [
+# #       { _id: 0, host: "172.17.0.1:27017","priority" : 1 },
+# #       { _id: 1, host: "172.17.0.1:27018","priority" : 0.5 },
+# #       { _id: 2, host: "172.17.0.1:27019","priority" : 0.5 }
+# #    ]
+# # },{force:true})
