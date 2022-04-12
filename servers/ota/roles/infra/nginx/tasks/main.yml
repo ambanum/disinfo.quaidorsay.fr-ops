@@ -1,8 +1,27 @@
 ---
+- name: Install package
+  apt:
+    name: nginx
+    update_cache: yes
+    state: latest
+
+- name: Setup nginx conf
+  template:
+    src: nginx.conf.tpl
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Clean default conf from sites-enabled
+  file:
+    state: absent
+    path: /etc/nginx/sites-enabled/default
+  notify: restart nginx
+
 - name: Add ota conf in sites-available
   template:
-    src: ../templates/ota.tpl
+    src: ota.tpl
     dest: /etc/nginx/sites-available/ota
+    force: yes
   notify: restart nginx
 
 - name: Link ota conf from sites-available to sites-enabled
@@ -10,4 +29,13 @@
     src: /etc/nginx/sites-available/ota
     dest: /etc/nginx/sites-enabled/ota
     state: link
+    force: yes
   notify: restart nginx
+
+- name: Ensure a job that certificates are renewed every day."
+  ansible.builtin.cron:
+    name: "renew certificates"
+    minute: "10"
+    hour: "5"
+    job: "certbot renew --no-random-sleep-on-renew --nginx --nginx-ctl /usr/sbin/nginx --nginx-server-root /etc/nginx/"
+  become: yes
