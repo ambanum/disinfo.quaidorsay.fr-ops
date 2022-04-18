@@ -23,12 +23,12 @@
 
 - name: Create data directory
   file:
-    path: {{ mongodb_host_dir }}
+    path: {mongodb_host_dir}
     state: directory
 
 - name: Set database files permissions
   ansible.builtin.file:
-    path: {{ mongodb_host_dir }}
+    path: {mongodb_host_dir}
     owner: mongodb
     group: mongodb
     recurse: yes

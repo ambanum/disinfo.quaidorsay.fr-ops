@@ -12,12 +12,31 @@
 # incase something goes wrong on the database you need to log into the server and launch
 # sudo iptables-save | uniq  | sudo iptables-restore
 # sudo docker stop ima-preproduction ima-tflmi-production ima-production ima-processor-production-3 ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production  ima-cyber-production ima-processor-cyber-production-1 ima-processor-cyber-production-2
-# 
+#
 # Then on your machine in ops repo folder
 # ansible-playbook playbooks/infra/mongodb-rs.yml -i inventories/production.yml --check --diff
 #
 # Then, restart all processors
 # sudo docker start ima-preproduction ima-tflmi-production ima-production ima-processor-production-3 ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production  ima-cyber-production ima-processor-cyber-production-1 ima-processor-cyber-production-2
+
+- name: Stop docker containers
+  shell: docker rm {{ item }} || true
+  with_items:
+    - mongo1
+    - mongo2
+    - mongo3
+
+# - name: Remove lock files on mongodb
+#   file:
+#     path: "{{ item }}"
+#     state: absent
+#   with_items:
+#     - "{{ mongodb_host_dir }}/db1/mongod.lock"
+#     - "{{ mongodb_host_dir }}/db2/mongod.lock"
+#     - "{{ mongodb_host_dir }}/db3/mongod.lock"
+
+#https://www.tothenew.com/blog/mongodb-replica-set-on-docker/
+# docker exec -u 0 mongo1 /bin/sh -c "echo '172.18.0.3 mongo2' >> /etc/hosts"
 
 - name: Start mongo in replica set mode
   community.docker.docker_compose:
@@ -27,34 +46,57 @@
       services:
         mongo1:
           image: mongo:{{ mongo_version }}
+          hostname: mongo1
           container_name: mongo1
-          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27017']
+          restart: unless-stopped
+          command: ['--replSet', 'rs0', '--bind_ip_all']
           volumes:
-            - "{{ mongodb_host_dir }}/db1:/data/db"
+            - '{{ mongodb_host_dir }}/db1:/data/db'
           ports:
             - 27017:27017
-          healthcheck:
-            test: test $$(echo "rs.instantiate({'_id':'rs0','protocolVersion':1,'version':1,members:[{_id:0,host:'mongo1:27017'},{_id:1,host:'mongo2:27018'},{_id:2,host:'mongo3:27019'}],settings:{chainingAllowed:true}},{force:true}).ok || rs.status().ok" | mongo --port 27017 --quiet) -eq 1
-            interval: 90d
-            start_period: 30s
 
         mongo2:
           image: mongo:{{ mongo_version }}
+          hostname: mongo2
           container_name: mongo2
-          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27018']
+          command: ['--replSet', 'rs0', '--bind_ip_all']
+          restart: unless-stopped
           volumes:
-            - "{{ mongodb_host_dir }}/db2/:/data/db"
+            - '{{ mongodb_host_dir }}/db2/:/data/db'
           ports:
-            - 27018:27018
+            - 27018:27017
 
         mongo3:
           image: mongo:{{ mongo_version }}
+          hostname: mongo3
           container_name: mongo3
-          command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27019']
+          command: ['--replSet', 'rs0', '--bind_ip_all']
+          restart: unless-stopped
           volumes:
-            - "{{ mongodb_host_dir }}/db3/:/data/db"
+            - '{{ mongodb_host_dir }}/db3/:/data/db'
           ports:
-            - 27019:27019
+            - 27019:27017
+
+# sudo iptables -A INPUT -p tcp --destination-port 27017 -j DROP
+
+
+# # Keep established connections.
+# SUDO iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# # Open SSH port to the local subnet.
+# # It is a common best practice to move SSH off of its well-known port 22 too.
+# SUDO iptables -A INPUT -p tcp -m state --state NEW --dport 42422 -s 192.168.0.0/24 -j ACCEPT
+
+# # Open MongoDB port to the local subnet.
+# SUDO iptables -A INPUT -p tcp -m state --state NEW --dport 38128 -s 192.168.0.0/24 -j ACCEPT
+
+# # Allow all outbound, drop everything else inbound.
+# SUDO iptables -A OUTPUT -j ACCEPT
+# SUDO iptables -A INPUT -j DROP
+# SUDO iptables -A FORWARD -j DROP
+
+
+# rs.initiate({'_id':'rs0','protocolVersion':1,'version':1,members:[{_id:0,host:'mongo1:27017'}],settings:{chainingAllowed:true}})
 
 - name: Install iptables
   apt:
@@ -64,12 +106,19 @@
     update_cache: yes
     state: latest
 
-- name: Block mongo port 27017 with iptables
+- name: Block mongo port 27017 with iptables for docker user
   ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27017 --ctdir ORIGINAL -j DROP
-- name: Block mongo port 27018 with iptables
+  become: true
+- name: Block mongo port 27018 with iptables for docker user
   ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27018 --ctdir ORIGINAL -j DROP
-- name: Block mongo port 27019 with iptables
+  become: true
+- name: Block mongo port 27019 with iptables for docker user
   ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27019 --ctdir ORIGINAL -j DROP
+  become: true
+
+
+iptables -A INPUT -p tcp --destination-port 27017 -j DROP
+
 
 - name: Write iptables rules to be launched again on reboot and remove duplicates
   ansible.builtin.shell: iptables-save | uniq | iptables-restore

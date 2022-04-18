@@ -1,0 +1,41 @@
+- name: pull docker mongo image
+  docker_image:
+    source: pull
+    name: mongo
+    tag: "{{ mongo_version }}"
+
+- name: ensure {{ mongodb_host_dir }} exist
+  file:
+    name: "{{ mongodb_host_dir }}"
+    state: directory
+
+- name: Start mongo container
+  community.general.docker_container:
+    name: "mongodb"
+    image: "mongo"
+    restart: yes
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ mongodb_host_dir }}:/data/db"
+
+# there is a `relaunch_after_restart.sh` on the server
+# sudo iptables-save | uniq  | sudo iptables-restore
+# sudo docker stop ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production
+# sudo docker rm mongodb
+# sudo docker run -d -v /var/lib/mongodb:/data/db --name mongodb -p 27017:27017 mongo
+# sudo docker start ima-preproduction ima-tflmi-production ima-production ima-processor-production-2 ima-processor-production-1 ima-processor-tflmi-production-2 ima-processor-tflmi-production-1 ima-processor-preproduction-1 ima-processor-ambnum-production-1 ima-ambnum-production
+
+- name: Install iptables
+  apt:
+    pkg:
+      - iptables
+      - iptables-persistent
+    update_cache: yes
+    state: latest
+
+- name: Block mongo port with iptables
+  ansible.builtin.command: iptables -I DOCKER-USER -i eth0 -p tcp -m conntrack --ctorigdstport 27017 --ctdir ORIGINAL -j DROP
+
+- name: Write iptables rules to be launched again on reboot and remove duplicates
+  ansible.builtin.shell: iptables-save | uniq | iptables-restore
