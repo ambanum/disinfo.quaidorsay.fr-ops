@@ -1,4 +1,0 @@
----
-- name: Setup ota apps
-  hosts: all
-

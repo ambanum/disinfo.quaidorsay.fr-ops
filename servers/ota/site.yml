@@ -1,6 +1,0 @@
----
-- name: Setup Server 2 infra and apps
-  hosts: all
-
-- import_playbook: infra.yml
-- import_playbook: apps.yml

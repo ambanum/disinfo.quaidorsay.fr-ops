@@ -31,10 +31,9 @@ Edit your hosts file `/etc/hosts`, add the following line so you can connect to 
 
 ```
 192.168.33.11    disinfo.local
-192.168.33.12    ota.local
 ```
 
-Now on your browser you will be able to access deployed app on the VM with the URL `http://disinfo.local` and `http://ota.local` to mimic the real architecture of our servers
+Now on your browser you will be able to access deployed app on the VM with the URL `http://disinfo.local` to mimic the real architecture of our servers
 
 The guest VM's IPs can be changed in the `VagrantFile`:
 
@@ -162,9 +161,6 @@ deploy:disinfo          	  ansible-playbook servers/disinfo/site.yml -i inventor
 deploy:disinfo:nginx        ansible-playbook playbooks/infra/nginx.yml -i inventories/production.yml --check --diff
 deploy:disinfo:docker       ansible-playbook playbooks/infra/docker.yml -i inventories/production.yml --check --diff
 deploy:disinfo:mongo        ansible-playbook playbooks/infra/mongodb.yml -i inventories/production.yml --check --diff
-
-deploy:local:ota	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/dev-fix.yml
-deploy:ota       	          ansible-playbook servers/ota/site.yml -i servers/ota/inventories/production.yml --check --diff
 
 mongo:restart	              ansible-playbook playbooks/infra/mongodb.yml -i inventories/production.yml --tags restart
 
