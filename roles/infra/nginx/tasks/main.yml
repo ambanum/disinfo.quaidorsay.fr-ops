@@ -9,23 +9,23 @@
   template:
     src: nginx.conf.tpl
     dest: /etc/nginx/nginx.conf
-  notify: restart nginx
+  notify: Restart Nginx
 
 - name: Clean default conf from sites-enabled
   file:
     state: absent
     path: /etc/nginx/sites-enabled/default
-  notify: restart nginx
+  notify: Restart Nginx
 
 - name: Add disinfo conf in sites-available
   template:
     src: disinfo.tpl
     dest: /etc/nginx/sites-available/disinfo
-  notify: restart nginx
+  notify: Restart Nginx
 
 - name: Link disinfo conf from sites-available to sites-enabled
   file:
     src: /etc/nginx/sites-available/disinfo
     dest: /etc/nginx/sites-enabled/disinfo
     state: link
-  notify: restart nginx
+  notify: Restart Nginx

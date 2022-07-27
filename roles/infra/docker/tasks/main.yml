@@ -1,5 +1,5 @@
 ---
-- name: Install docker dependencies
+- name: Install Docker dependencies
   apt:
     name: "{{item}}"
     state: present
@@ -11,17 +11,17 @@
     - gnupg-agent
     - software-properties-common
 
-- name: add docker GPG key
+- name: Add Docker GPG key
   apt_key:
     url: https://download.docker.com/linux/debian/gpg
     state: present
 
-- name: add docker repository to apt
+- name: Add Docker repository to apt
   apt_repository:
     repo: deb https://download.docker.com/linux/debian buster stable
     state: present
 
-- name: install docker
+- name: Install Docker
   apt:
     name: "{{item}}"
     state: latest
@@ -33,15 +33,15 @@
     - python3
     - python-docker
 
-- name: Install docker with pip
+- name: Install Docker with pip
   pip:
     name: docker
 
-- name: Install docker-compose with pip
+- name: Install Docker Compose with pip
   pip:
     name: docker-compose
 
-- name: Assure that docker is started
+- name: Assure that Docker is started
   service:
     name: docker
     state: started
