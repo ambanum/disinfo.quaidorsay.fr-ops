@@ -1,11 +1,1 @@
 home_directory: "/home/{{ ansible_user }}"
-
-mysql_root_password: "{{ vault_mysql_root_password }}"
-mysql_databases:
-  - name: mattermost
-mysql_users:
-  - name: mmuser
-    host: "%"
-    password: "{{ vault_mysql_user_mmuser_password }}"
-    priv: "mattermost.*:ALL"
-
