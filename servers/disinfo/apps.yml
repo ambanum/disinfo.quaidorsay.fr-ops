@@ -9,3 +9,4 @@
 - import_playbook: ../../playbooks/apps/political-ads-crowdsourcing-client.yml
 - import_playbook: ../../playbooks/apps/political-ads-crowdsourcing-server.yml
 - import_playbook: ../../playbooks/apps/political-ads-scraper.yml
+- import_playbook: ../../playbooks/apps/proxy.yml

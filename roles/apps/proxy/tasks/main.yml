@@ -1,0 +1,15 @@
+---
+- name: Add disinfo conf in sites-available
+  template:
+    src: disinfo.tpl
+    dest: /etc/nginx/sites-available/disinfo
+    force: yes
+  notify: Restart Nginx
+
+- name: Link disinfo conf from sites-available to sites-enabled
+  file:
+    src: /etc/nginx/sites-available/disinfo
+    dest: /etc/nginx/sites-enabled/disinfo
+    state: link
+    force: yes
+  notify: Restart Nginx
