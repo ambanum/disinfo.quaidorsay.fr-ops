@@ -8,3 +8,14 @@ all:
           ansible_python_interpreter: /usr/bin/python3
           base_url: https://disinfo.quaidorsay.fr
           enable_https: true
+          certbot_create_if_missing: true
+          certbot_create_method: standalone
+          certbot_admin_email: martin.ratinaud@beta.gouv.fr
+          certbot_auto_renew: true
+          certbot_auto_renew_user: "{{ ansible_user }}"
+          certbot_auto_renew_hour: "4"
+          certbot_auto_renew_minute: "30"
+          certbot_auto_renew_options: "--no-random-sleep-on-renew --nginx --nginx-ctl /usr/sbin/nginx --nginx-server-root /etc/nginx/"
+          certbot_certs:
+            - domains:
+                - "disinfo.quaidorsay.fr"
