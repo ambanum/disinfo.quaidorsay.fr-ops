@@ -17,6 +17,12 @@
     path: /etc/nginx/sites-enabled/default
   notify: Restart Nginx
 
+- name: Install Certbox nginx python package
+  apt:
+    name: python3-certbot-nginx
+    update_cache: yes
+    state: latest
+
 - name: Ensure a job that certificates are renewed every day."
   ansible.builtin.cron:
     name: "renew certificates"
